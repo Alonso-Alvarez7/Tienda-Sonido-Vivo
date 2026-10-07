@@ -2,7 +2,13 @@ function ProductoCard({ producto, onAgregar, onVerDetalle }) {
     return (
         <article className="producto-card">
             <p className="producto-categoria">{producto.categoria}</p>
+
             <h2>{producto.nombre}</h2>
+            
+            <img
+                src={producto.imagen}
+                alt={`${producto.nombre} marca ${producto.marca}`}
+            />
 
             <p><strong>Marca:</strong> {producto.marca}</p>
             <p><strong>Modelo:</strong> {producto.modelo}</p>
@@ -23,6 +29,7 @@ function ProductoCard({ producto, onAgregar, onVerDetalle }) {
                 <button className="boton-detalle" onClick={() => onVerDetalle(producto)}>
                     Ver detalle
                 </button>
+
             </div>
         </article>
     );
