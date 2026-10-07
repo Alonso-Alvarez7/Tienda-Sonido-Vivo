@@ -9,6 +9,7 @@ export const productos = [
         stock: 8,
         precio: 129990,
         descripcion: "Tapa de abeto, aros y fondo de meranti. Ideal para iniciantes.",
+        imagen: "/imagen/productos/GA001.jpg"
     },
     {
         id: "GA002",
@@ -20,6 +21,8 @@ export const productos = [
         stock: 5,
         precio: 189990,
         descripcion: "Tapa de abeto macizo, brazo de caoba. Sonido cálido y proyectado.",
+        imagen: "/imagen/productos/GA002.jpg"
+
     },
     {
         id: "GA003",
@@ -31,6 +34,8 @@ export const productos = [
         stock: 10,
         precio: 89990,
         descripcion: "Nailon, tapa de abeto. Ideal para estudio y flamenco.",
+        imagen: "/imagen/productos/GA003.jpg"
+
     },
     {
         id: "GA004",
@@ -42,6 +47,8 @@ export const productos = [
         stock: 3,
         precio: 349990,
         descripcion: "Pickup integrado, afinador incorporado.",
+        imagen: "/imagen/productos/GA004.jpg"
+
     },
     {
         id: "GA005",
@@ -53,6 +60,8 @@ export const productos = [
         stock: 6,
         precio: 79990,
         descripcion: "Tamaño reducido para niños de 6 a 10 años.",
+        imagen: "/imagen/productos/GA005.jpg"
+
     },
     {
         id: "GE001",
@@ -64,6 +73,8 @@ export const productos = [
         stock: 5,
         precio: 249990,
         descripcion: "Cuerpo de álamo, mástil de arce, pastillas SSS.",
+        imagen: "/imagen/productos/GE001.jpg"
+
     },
     {
         id: "GE002",
@@ -75,6 +86,7 @@ export const productos = [
         stock: 4,
         precio: 329990,
         descripcion: "Cuerpo caoba, tapa arce, pastillas humbucker.",
+        imagen: "/imagen/productos/GE002.jpg"
     },
     {
         id: "GE003",
@@ -86,6 +98,7 @@ export const productos = [
         stock: 3,
         precio: 319990,
         descripcion: "Cuerpo caoba, mástil caoba, 2 humbuckers.",
+        imagen: "/imagen/productos/GE003.jpg"
     },
     {
         id: "GE004",
@@ -97,6 +110,7 @@ export const productos = [
         stock: 4,
         precio: 239990,
         descripcion: "Cuerpo álamo, clavijero vintage, 2 pastillas single.",
+        imagen: "/imagen/productos/GE004.jpg"
     },
     {
         id: "GE005",
@@ -108,6 +122,7 @@ export const productos = [
         stock: 2,
         precio: 549990,
         descripcion: "Semi-hueca, 2 humbuckers, ideal para jazz y blues.",
+        imagen: "/imagen/productos/GE005.jpg"
     },
     {
         id: "BA001",
@@ -119,6 +134,7 @@ export const productos = [
         stock: 5,
         precio: 299990,
         descripcion: "Pickup PJ, cuerpo álamo, mástil arce.",
+        imagen: "/imagen/productos/BA001.jpg"
     },
     {
         id: "BA002",
@@ -130,6 +146,7 @@ export const productos = [
         stock: 2,
         precio: 699990,
         descripcion: "Alder body, 2 Alnico V Jazz single-coil.",
+        imagen: "/imagen/productos/BA002.jpg"
     },
     {
         id: "BA003",
@@ -141,6 +158,7 @@ export const productos = [
         stock: 2,
         precio: 429990,
         descripcion: "Electroacústico, afinador incorporado.",
+        imagen: "/imagen/productos/BA003.jpg"
     },
     {
         id: "BT001",
@@ -152,6 +170,7 @@ export const productos = [
         stock: 2,
         precio: 599990,
         descripcion: "Incluye stands, platillos y pedal de bombo.",
+        imagen: "/imagen/productos/BT001.jpg"
     },
     {
         id: "BT002",
@@ -163,6 +182,8 @@ export const productos = [
         stock: 2,
         precio: 799990,
         descripcion: "Módulo TD-02, 8 pads de goma, pedal hi-hat.",
+        imagen: "/imagen/productos/BT002.jpg"
+
     },
     {
         id: "BT003",
@@ -174,6 +195,8 @@ export const productos = [
         stock: 4,
         precio: 89990,
         descripcion: "Acero, 14x5 pulgadas, 10 tensores.",
+        imagen: "/imagen/productos/BT003.jpg"
+
     },
     {
         id: "BT004",
@@ -185,6 +208,8 @@ export const productos = [
         stock: 3,
         precio: 149990,
         descripcion: "Latón B20, sonido brillante y claro.",
+        imagen: "/imagen/productos/BT004.jpg"
+
     },
     {
         id: "BT005",
@@ -196,6 +221,8 @@ export const productos = [
         stock: 3,
         precio: 129990,
         descripcion: "Latón B20, ataque rápido.",
+        imagen: "/imagen/productos/BT005.jpg"
+
     },
     {
         id: "TC001",
@@ -207,6 +234,7 @@ export const productos = [
         stock: 4,
         precio: 249990,
         descripcion: "61 teclas sensibles al tacto, 622 voces.",
+        imagen: "/imagen/productos/TC001.jpg"
     },
     {
         id: "TC002",
@@ -218,6 +246,7 @@ export const productos = [
         stock: 2,
         precio: 499990,
         descripcion: "88 teclas pesadas, 10 voces, pedal sustain incluido.",
+        imagen: "/imagen/productos/TC002.jpg"
     },
     {
         id: "TC003",
@@ -229,6 +258,7 @@ export const productos = [
         stock: 5,
         precio: 129990,
         descripcion: "MIDI controller, 49 mini teclas.",
+        imagen: "/imagen/productos/TC003.jpg"
     },
     {
         id: "TC004",
@@ -240,6 +270,7 @@ export const productos = [
         stock: 2,
         precio: 399990,
         descripcion: "88 teclas martillo, sin sonidos propios.",
+        imagen: "/imagen/productos/TC004.jpg"
     },
     {
         id: "AM001",
@@ -251,6 +282,7 @@ export const productos = [
         stock: 5,
         precio: 99990,
         descripcion: "15W, distorsión incorporada, entrada auxiliar.",
+        imagen: "/imagen/productos/AM001.jpg"
     },
     {
         id: "AM002",
@@ -262,6 +294,7 @@ export const productos = [
         stock: 3,
         precio: 299990,
         descripcion: "40W, 4 canales, efectos digitales integrados.",
+        imagen: "/imagen/productos/AM002.jpg"
     },
     {
         id: "AM003",
@@ -273,6 +306,7 @@ export const productos = [
         stock: 2,
         precio: 449990,
         descripcion: "100W, tweeter integrado, ecualizador de 4 bandas.",
+        imagen: "/imagen/productos/AM003.jpg"
     },
     {
         id: "AM004",
@@ -284,6 +318,7 @@ export const productos = [
         stock: 2,
         precio: 499990,
         descripcion: "60W, 2 canales, reverb y chorus incorporados.",
+        imagen: "/imagen/productos/AM004.jpg"
     },
     {
         id: "MI001",
@@ -295,6 +330,7 @@ export const productos = [
         stock: 8,
         precio: 149990,
         descripcion: "Estándar industria para voz en vivo.",
+        imagen: "/imagen/productos/MI001.jpg"
     },
     {
         id: "MI002",
@@ -306,6 +342,7 @@ export const productos = [
         stock: 6,
         precio: 139990,
         descripcion: "Ideal para captura de instrumentos y amplificadores.",
+        imagen: "/imagen/productos/MI002.jpg"
     },
     {
         id: "MI003",
@@ -317,6 +354,7 @@ export const productos = [
         stock: 4,
         precio: 199990,
         descripcion: "Cardioide, XLR, ideal para grabación en estudio.",
+        imagen: "/imagen/productos/MI003.jpg"
     },
     {
         id: "MI004",
@@ -328,6 +366,7 @@ export const productos = [
         stock: 5,
         precio: 299990,
         descripcion: "USB, 4 patrones polares, ideal para streaming y podcast.",
+        imagen: "/imagen/productos/MI004.jpg"
     },
     {
         id: "PE001",
@@ -339,6 +378,7 @@ export const productos = [
         stock: 7,
         precio: 79990,
         descripcion: "Clásico pedal de distorsión, 3 controles.",
+        imagen: "/imagen/productos/PE001.jpg"
     },
     {
         id: "PE002",
@@ -350,6 +390,7 @@ export const productos = [
         stock: 4,
         precio: 179990,
         descripcion: "8 modos de reverb, control de shimmer.",
+        imagen: "/imagen/productos/PE002.jpg"
     },
     {
         id: "PE003",
@@ -361,6 +402,7 @@ export const productos = [
         stock: 2,
         precio: 349990,
         descripcion: "Diseño tipo pedalboard, 8 efectos simultáneos.",
+        imagen: "/imagen/productos/PE003.jpg"
     },
     {
         id: "PE004",
@@ -372,6 +414,7 @@ export const productos = [
         stock: 8,
         precio: 89990,
         descripcion: "Afinador cromático, indicador de tono.",
+        imagen: "/imagen/productos/PE004.jpg"
     },
     {
         id: "PE005",
@@ -383,6 +426,7 @@ export const productos = [
         stock: 4,
         precio: 179990,
         descripcion: "Delay analógico cálido, tiempo 600ms.",
+        imagen: "/imagen/productos/PE005.jpg"
     },
     {
         id: "PE006",
@@ -394,6 +438,7 @@ export const productos = [
         stock: 6,
         precio: 99990,
         descripcion: "Tube Screamer clásico, sonido suave y orgánico.",
+        imagen: "/imagen/productos/PE006.jpg"
     },
     {
         id: "AC001",
@@ -405,6 +450,7 @@ export const productos = [
         stock: 25,
         precio: 8990,
         descripcion: "Juego 6 cuerdas, calibre ligero.",
+        imagen: "/imagen/productos/AC001.jpg"
     },
     {
         id: "AC002",
@@ -416,6 +462,7 @@ export const productos = [
         stock: 20,
         precio: 10990,
         descripcion: "Bronce fósforo, sonido cálido.",
+        imagen: "/imagen/productos/AC002.jpg"
     },
     {
         id: "AC003",
@@ -427,6 +474,7 @@ export const productos = [
         stock: 12,
         precio: 14990,
         descripcion: "Cuerdas de níquel enrollado, set 4 cuerdas.",
+        imagen: "/imagen/productos/AC003.jpg"
     },
     {
         id: "AC004",
@@ -438,6 +486,7 @@ export const productos = [
         stock: 50,
         precio: 3990,
         descripcion: "Celulosa, grosor medio.",
+        imagen: "/imagen/productos/AC004.jpg"
     },
     {
         id: "AC005",
@@ -449,6 +498,7 @@ export const productos = [
         stock: 15,
         precio: 12990,
         descripcion: "Capotraste de resorte, compatible 6 cuerdas.",
+        imagen: "/imagen/productos/AC005.jpg"
     },
     {
         id: "AC006",
@@ -460,6 +510,7 @@ export const productos = [
         stock: 20,
         precio: 8990,
         descripcion: "Afinador cromático de clip, pantalla giratoria.",
+        imagen: "/imagen/productos/AC006.jpg"
     },
     {
         id: "AC007",
@@ -471,6 +522,7 @@ export const productos = [
         stock: 15,
         precio: 12990,
         descripcion: "Cable trenzado, conectores dorados, 3 metros.",
+        imagen: "/imagen/productos/AC007.jpg"
     },
     {
         id: "AC008",
@@ -482,6 +534,7 @@ export const productos = [
         stock: 10,
         precio: 17990,
         descripcion: "Cable trenzado, conectores dorados, 6 metros.",
+        imagen: "/imagen/productos/AC008.jpg"
     },
     {
         id: "AC009",
@@ -493,6 +546,7 @@ export const productos = [
         stock: 12,
         precio: 22990,
         descripcion: "Soporte plegable con enganche automático.",
+        imagen: "/imagen/productos/AC009.jpg"
     },
     {
         id: "AC010",
@@ -504,6 +558,7 @@ export const productos = [
         stock: 10,
         precio: 18990,
         descripcion: "Montaje a pared, enganche automático.",
+        imagen: "/imagen/productos/AC010.jpg"
     },
     {
         id: "ES001",
@@ -515,6 +570,7 @@ export const productos = [
         stock: 4,
         precio: 149990,
         descripcion: "1 entrada XLR+instrumento, 2 salidas, 24bit/192kHz.",
+        imagen: "/imagen/productos/ES001.jpg"
     },
     {
         id: "ES002",
@@ -526,6 +582,7 @@ export const productos = [
         stock: 6,
         precio: 79990,
         descripcion: "Circumaurales, respuesta 15Hz-20kHz.",
+        imagen: "/imagen/productos/ES002.jpg"
     },
     {
         id: "ES003",
@@ -537,6 +594,7 @@ export const productos = [
         stock: 4,
         precio: 219990,
         descripcion: "Referencia de industria, sonido neutro y detallado.",
+        imagen: "/imagen/productos/ES003.jpg"
     },
     {
         id: "ES004",
@@ -548,6 +606,7 @@ export const productos = [
         stock: 2,
         precio: 349990,
         descripcion: "Altavoz activo, respuesta plana, ideal mezcla.",
+        imagen: "/imagen/productos/ES004.jpg"
     },
     {
         id: "ES005",
@@ -559,5 +618,6 @@ export const productos = [
         stock: 8,
         precio: 14990,
         descripcion: "Doble malla, brazo flexible con clip.",
+        imagen: "/imagen/productos/ES005.jpg"
     },
 ];
