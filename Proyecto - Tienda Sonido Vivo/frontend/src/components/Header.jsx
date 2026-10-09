@@ -2,7 +2,7 @@ import Navbar from "./Navbar";
 
 function Header({ cantidadEnCarrito }) {
     return (
-        <header className="encabezado" id="inicio">
+        <header className="encabezado" >
             <div className="encabezado-marca">
                 <h1>Sonido Vivo</h1>
                 <p>Instrumentos y equipos para tu música</p>

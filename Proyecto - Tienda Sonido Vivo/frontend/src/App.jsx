@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
+
 import Header from "./components/Header";
+import Inicio from "./pages/Inicio";
+import Footer from "./components/Footer";
+
 import Productos from "./pages/Productos";
 import DetalleProducto from "./pages/DetalleProducto";
 import Carrito from "./pages/Carrito";
 import Checkout from "./pages/Checkout";
-import "./App.css";
+import "./styles.css";
 
 function App() {
   const [carrito, setCarrito] = useState(() => {
@@ -83,6 +87,7 @@ function App() {
         />
       ) : (
         <>
+          <Inicio />
           <Productos
             onAgregar={agregarAlCarrito}
             onVerDetalle={setProductoSeleccionado}
@@ -96,6 +101,7 @@ function App() {
           />
         </>
       )}
+      <Footer />
     </>
   );
 }
