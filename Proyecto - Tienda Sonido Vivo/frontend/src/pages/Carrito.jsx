@@ -5,8 +5,8 @@ function Carrito({ carrito, onCambiarCantidad, onEliminar, onCheckout }) {
     );
 
     return (
-        <section className="carrito" id="carrito">
-            <h2>Tu carrito</h2>
+        <main className="pagina-carrito">
+            <h1>Tu carrito</h1>
 
             {carrito.length === 0 ? (
                 <p>Tu carrito está vacío.</p>
@@ -14,15 +14,21 @@ function Carrito({ carrito, onCambiarCantidad, onEliminar, onCheckout }) {
                 <>
                     {carrito.map((producto) => (
                         <article className="carrito-producto" key={producto.id}>
-                            <div>
-                                <h3>{producto.nombre}</h3>
+                            <img
+                                className="carrito-imagen"
+                                src={producto.imagen}
+                                alt={`${producto.nombre} marca ${producto.marca}`}
+                            />
+
+                            <div className="carrito-producto-info">
+                                <h2>{producto.nombre}</h2>
+                                <p>{producto.marca} · {producto.modelo}</p>
                                 <p>
-                                    ${producto.precio.toLocaleString("es-CL")} CLP por unidad
+                                    Precio: ${producto.precio.toLocaleString("es-CL")} CLP
                                 </p>
                                 <p>
                                     Subtotal: $
-                                    {(producto.precio * producto.cantidad).toLocaleString("es-CL")}{" "}
-                                    CLP
+                                    {(producto.precio * producto.cantidad).toLocaleString("es-CL")} CLP
                                 </p>
                             </div>
 
@@ -57,16 +63,16 @@ function Carrito({ carrito, onCambiarCantidad, onEliminar, onCheckout }) {
                         </article>
                     ))}
 
-                    <h3 className="carrito-total">
+                    <h2 className="carrito-total">
                         Total: ${total.toLocaleString("es-CL")} CLP
-                    </h3>
+                    </h2>
 
                     <button className="boton-checkout" onClick={onCheckout}>
                         Continuar al checkout
                     </button>
                 </>
             )}
-        </section>
+        </main>
     );
 }
 

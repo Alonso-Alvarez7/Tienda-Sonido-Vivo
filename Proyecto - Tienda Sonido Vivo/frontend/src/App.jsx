@@ -1,16 +1,42 @@
 import { useEffect, useState } from "react";
+import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 
 import Header from "./components/Header";
-import Inicio from "./pages/Inicio";
 import Footer from "./components/Footer";
-
+import Inicio from "./pages/Inicio";
 import Productos from "./pages/Productos";
 import DetalleProducto from "./pages/DetalleProducto";
 import Carrito from "./pages/Carrito";
 import Checkout from "./pages/Checkout";
+import { productos } from "./data/productos";
 import "./styles.css";
 
+function PaginaDetalle({ onAgregar }) {
+  const { id } = useParams();
+  const navegar = useNavigate();
+  const producto = productos.find((item) => item.id === id);
+
+  if (!producto) {
+    return (
+      <main>
+        <h1>Producto no encontrado</h1>
+        <button onClick={() => navegar("/")}>Volver a la tienda</button>
+      </main>
+    );
+  }
+
+  return (
+    <DetalleProducto
+      producto={producto}
+      onAgregar={onAgregar}
+      onVolver={() => navegar("/")}
+    />
+  );
+}
+
 function App() {
+  const navegar = useNavigate();
+
   const [carrito, setCarrito] = useState(() => {
     try {
       const carritoGuardado = localStorage.getItem("sonidoVivoCarrito");
@@ -19,9 +45,6 @@ function App() {
       return [];
     }
   });
-
-  const [productoSeleccionado, setProductoSeleccionado] = useState(null);
-  const [checkoutActivo, setCheckoutActivo] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("sonidoVivoCarrito", JSON.stringify(carrito));
@@ -74,33 +97,61 @@ function App() {
     <>
       <Header cantidadEnCarrito={cantidadEnCarrito} />
 
-      {checkoutActivo ? (
-        <Checkout
-          carrito={carrito}
-          onVolver={() => setCheckoutActivo(false)}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <Inicio />
+              <Productos
+                onAgregar={agregarAlCarrito}
+                onVerDetalle={(producto) =>
+                  navegar(`/productos/${producto.id}`)
+                }
+              />
+            </>
+          }
         />
-      ) : productoSeleccionado ? (
-        <DetalleProducto
-          producto={productoSeleccionado}
-          onAgregar={agregarAlCarrito}
-          onVolver={() => setProductoSeleccionado(null)}
-        />
-      ) : (
-        <>
-          <Inicio />
-          <Productos
-            onAgregar={agregarAlCarrito}
-            onVerDetalle={setProductoSeleccionado}
-          />
 
-          <Carrito
-            carrito={carrito}
-            onCambiarCantidad={cambiarCantidad}
-            onEliminar={eliminarDelCarrito}
-            onCheckout={() => setCheckoutActivo(true)}
-          />
-        </>
-      )}
+        <Route
+          path="/productos/:id"
+          element={<PaginaDetalle onAgregar={agregarAlCarrito} />}
+        />
+
+        <Route
+          path="/carrito"
+          element={
+            <Carrito
+              carrito={carrito}
+              onCambiarCantidad={cambiarCantidad}
+              onEliminar={eliminarDelCarrito}
+              onCheckout={() => navegar("/checkout")}
+            />
+          }
+        />
+
+        <Route
+          path="/checkout"
+          element={
+            <Checkout
+              carrito={carrito}
+              onVolver={() => navegar("/carrito")}
+              onConfirmar={() => setCarrito([])}
+            />
+          }
+        />
+
+        <Route
+          path="*"
+          element={
+            <main>
+              <h1>Página no encontrada</h1>
+              <button onClick={() => navegar("/")}>Volver a Inicio</button>
+            </main>
+          }
+        />
+      </Routes>
+
       <Footer />
     </>
   );

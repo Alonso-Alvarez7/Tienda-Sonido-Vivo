@@ -5,26 +5,38 @@ function DetalleProducto({ producto, onAgregar, onVolver }) {
                 ← Volver al catálogo
             </button>
 
-            <p className="producto-categoria">{producto.categoria}</p>
-            <h1>{producto.nombre}</h1>
+            <div className="detalle-contenido">
+                <div className="detalle-imagen-contenedor">
+                    <img
+                        className="detalle-imagen"
+                        src={producto.imagen}
+                        alt={`${producto.nombre} marca ${producto.marca}`}
+                    />
+                </div>
 
-            <p><strong>Marca:</strong> {producto.marca}</p>
-            <p><strong>Modelo:</strong> {producto.modelo}</p>
-            <p><strong>Código:</strong> {producto.codigo}</p>
-            <p>{producto.descripcion}</p>
+                <section className="detalle-informacion">
+                    <p className="producto-categoria">{producto.categoria}</p>
+                    <h1>{producto.nombre}</h1>
 
-            <p className="producto-precio">
-                ${producto.precio.toLocaleString("es-CL")} CLP
-            </p>
-            <p>Stock disponible: {producto.stock}</p>
+                    <p><strong>Marca:</strong> {producto.marca}</p>
+                    <p><strong>Modelo:</strong> {producto.modelo}</p>
+                    <p><strong>Código:</strong> {producto.codigo}</p>
+                    <p>{producto.descripcion}</p>
 
-            <button
-                className="boton-agregar"
-                onClick={() => onAgregar(producto)}
-                disabled={producto.stock === 0}
-            >
-                {producto.stock === 0 ? "Sin stock" : "Agregar al carrito"}
-            </button>
+                    <p className="producto-precio">
+                        ${producto.precio.toLocaleString("es-CL")} CLP
+                    </p>
+                    <p>Stock disponible: {producto.stock}</p>
+
+                    <button
+                        className="boton-agregar"
+                        onClick={() => onAgregar(producto)}
+                        disabled={producto.stock === 0}
+                    >
+                        {producto.stock === 0 ? "Sin stock" : "Agregar al carrito"}
+                    </button>
+                </section>
+            </div>
         </main>
     );
 }

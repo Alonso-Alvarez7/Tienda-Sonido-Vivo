@@ -11,6 +11,7 @@ function Header({ cantidadEnCarrito }) {
             <Navbar />
 
             <p className="encabezado-carrito">
+                <span aria-hidden="true">🛒</span>{" "}
                 Carrito: {cantidadEnCarrito} producto(s)
             </p>
         </header>
