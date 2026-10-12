@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Checkout({ carrito, onVolver }) {
+function Checkout({ carrito, onVolver, onConfirmar }) {
     const [tipoEntrega, setTipoEntrega] = useState("retiro");
     const [pedidoConfirmado, setPedidoConfirmado] = useState(false);
 
@@ -11,6 +11,7 @@ function Checkout({ carrito, onVolver }) {
 
     function confirmarPedido(evento) {
         evento.preventDefault();
+        onConfirmar();
         setPedidoConfirmado(true);
     }
 
