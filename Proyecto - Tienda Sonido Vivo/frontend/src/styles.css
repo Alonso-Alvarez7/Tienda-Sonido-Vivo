@@ -32,11 +32,94 @@ button {
 
 
 /* =========================================================
+   COMPONENTES COMPARTIDOS
+   (tarjetas, botones y campos usados en varias vistas)
+   ========================================================= */
+
+/* Tarjeta blanca con borde */
+.producto-card,
+.detalle-producto,
+.checkout,
+.auth-formulario,
+.admin-formulario {
+    border: 1px solid #e2e0dc;
+    border-radius: 10px;
+    background: white;
+}
+
+/* Botón principal (café sólido) */
+.producto-card button,
+.boton-agregar,
+.boton-checkout,
+.checkout button,
+.carrito-controles button,
+.auth-formulario button,
+.admin-formulario button,
+.tabla-admin button {
+    padding: 10px 14px;
+    border: 1px solid #7b3f20;
+    border-radius: 6px;
+    color: white;
+    background: #7b3f20;
+}
+
+/* Botón secundario (con borde) */
+.boton-volver,
+.checkout .boton-volver,
+.producto-card .boton-detalle,
+.auth-formulario .boton-secundario,
+.admin-formulario .boton-secundario,
+.tabla-admin .boton-secundario {
+    border: 1px solid #7b3f20;
+    color: #7b3f20;
+    background: white;
+}
+
+/* Botón deshabilitado */
+.producto-card button:disabled,
+.boton-agregar:disabled,
+.boton-checkout:disabled,
+.checkout button:disabled,
+.carrito-controles button:disabled,
+.auth-formulario button:disabled,
+.admin-formulario button:disabled,
+.tabla-admin button:disabled {
+    border-color: #999;
+    color: white;
+    background: #999;
+    cursor: not-allowed;
+}
+
+/* Etiquetas de formulario (texto sobre el campo) */
+.filtros-productos label,
+.checkout-formulario > label,
+.auth-formulario label,
+.admin-formulario label {
+    display: grid;
+    gap: 6px;
+}
+
+/* Campos de formulario */
+.filtros-productos input,
+.filtros-productos select,
+.checkout-formulario input:not([type="radio"]),
+.auth-formulario input,
+.admin-formulario input,
+.admin-formulario select {
+    padding: 10px;
+    border: 1px solid #b8b8b8;
+    border-radius: 6px;
+    background: white;
+}
+
+
+/* =========================================================
    ENCABEZADO / NAVBAR
    ========================================================= */
 
 .encabezado {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
@@ -62,6 +145,7 @@ button {
 
 .navbar-enlaces {
     display: flex;
+    align-items: center;
     gap: 20px;
 }
 
@@ -78,303 +162,19 @@ button {
     display: none;
 }
 
-
-/* =========================================================
-   CATÁLOGO DE PRODUCTOS
-   ========================================================= */
-
-.pagina-productos {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 36px 24px;
+/* Sesión: nombre del usuario y botón salir */
+.navbar-usuario {
+    color: #d4d4d4;
 }
 
-.pagina-productos>h1,
-.pagina-productos>p {
-    text-align: center;
-}
-
-
-/* =========================================================
-   FILTROS
-   ========================================================= */
-
-.filtros-productos {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    margin: 28px 0;
-}
-
-.filtros-productos label {
-    display: grid;
-    gap: 6px;
-}
-
-.filtros-productos input,
-.filtros-productos select {
-    min-width: 240px;
-    padding: 10px;
-    border: 1px solid #b8b8b8;
-    border-radius: 6px;
-    background: white;
-}
-
-
-/* =========================================================
-   GRID DE PRODUCTOS
-   ========================================================= */
-
-.productos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
-}
-
-
-/* =========================================================
-   TARJETA DE PRODUCTO
-   ========================================================= */
-
-.producto-card {
-    padding: 20px;
-    border: 1px solid #e2e0dc;
-    border-radius: 10px;
-    background: white;
-    box-shadow: 0 2px 8px #0000000d;
-}
-
-.producto-card img {
-    display: block;
-    width: 100%;
-    height: 200px;
-    object-fit: contain;
-    background: #f0efec;
-}
-
-.producto-categoria {
-    color: #6b4f3a;
-    font-size: 14px;
-}
-
-.producto-card h2 {
-    font-size: 20px;
-}
-
-.producto-precio {
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.producto-card button {
-    padding: 10px 14px;
-    border: 0;
+.navbar-salir {
+    padding: 4px 10px;
+    border: 1px solid white;
     border-radius: 6px;
     color: white;
-    background: #7b3f20;
+    background: transparent;
 }
 
-.producto-card button:disabled {
-    background: #888;
-    cursor: not-allowed;
-}
-
-.producto-botones {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.producto-card .boton-detalle {
-    border: 1px solid #7b3f20;
-    color: #7b3f20;
-    background: white;
-}
-
-.boton-agregar {
-    padding: 10px 14px;
-    border: 0;
-    border-radius: 6px;
-    color: white;
-    background: #7b3f20;
-}
-
-
-/* =========================================================
-   CARRITO
-   ========================================================= */
-
-.carrito {
-    max-width: 1200px;
-    margin: 0 auto 48px;
-    padding: 24px;
-    border-top: 2px solid #e2e0dc;
-}
-
-.carrito-producto {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-    padding: 16px 0;
-    border-bottom: 1px solid #e2e0dc;
-}
-
-.carrito-producto h3 {
-    margin-top: 0;
-}
-
-.carrito-controles {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.carrito-controles button {
-    padding: 8px 12px;
-    border: 0;
-    border-radius: 6px;
-    color: white;
-    background: #7b3f20;
-}
-
-.carrito-controles button:disabled {
-    background: #999;
-    cursor: not-allowed;
-}
-
-.carrito-controles .boton-eliminar {
-    background: #a83232;
-}
-
-.carrito-total {
-    text-align: right;
-}
-
-.pagina-carrito {
-    width: min(1100px, calc(100% - 32px));
-    min-height: 65vh;
-    margin: 0 auto;
-    padding: 32px 0 48px;
-}
-
-.carrito-producto {
-    display: grid;
-    grid-template-columns: 140px minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 20px;
-    padding: 20px 0;
-    border-bottom: 1px solid #e2e0dc;
-}
-
-.carrito-imagen {
-    display: block;
-    width: 140px;
-    height: 130px;
-    border-radius: 8px;
-    background: #f0efec;
-    object-fit: contain;
-}
-
-.carrito-producto-info h2 {
-    margin-top: 0;
-}
-
-@media (max-width: 650px) {
-    .carrito-producto {
-        grid-template-columns: 1fr;
-    }
-
-    .carrito-imagen {
-        width: 100%;
-        height: 220px;
-    }
-}
-
-
-/* =========================================================
-   DETALLE DEL PRODUCTO
-   ========================================================= */
-
-.detalle-producto {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 32px;
-    border: 1px solid #e2e0dc;
-    border-radius: 10px;
-    background: white;
-}
-
-.boton-volver {
-    margin-bottom: 24px;
-    padding: 8px 12px;
-    border: 1px solid #7b3f20;
-    border-radius: 6px;
-    color: #7b3f20;
-    background: white;
-}
-
-
-/* =========================================================
-   CHECKOUT
-   ========================================================= */
-
-.checkout {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 28px;
-    border: 1px solid #e2e0dc;
-    border-radius: 10px;
-    background: white;
-}
-
-.checkout-resumen {
-    margin: 24px 0;
-    padding: 18px;
-    border-radius: 8px;
-    background: #f6f5f2;
-}
-
-.checkout-formulario {
-    display: grid;
-    gap: 16px;
-}
-
-.checkout-formulario>label {
-    display: grid;
-    gap: 6px;
-}
-
-.checkout-formulario input:not([type="radio"]) {
-    padding: 10px;
-    border: 1px solid #b8b8b8;
-    border-radius: 6px;
-}
-
-.checkout-formulario fieldset {
-    display: grid;
-    gap: 10px;
-    border: 1px solid #b8b8b8;
-    border-radius: 6px;
-}
-
-.opcion-entrega {
-    display: flex;
-    gap: 8px;
-}
-
-.checkout button,
-.boton-checkout {
-    padding: 10px 14px;
-    border: 0;
-    border-radius: 6px;
-    color: white;
-    background: #7b3f20;
-}
-
-.checkout button:disabled {
-    background: #999;
-}
 
 /* =========================================================
    INICIO
@@ -441,6 +241,303 @@ button {
 
 
 /* =========================================================
+   CATÁLOGO DE PRODUCTOS
+   ========================================================= */
+
+.pagina-productos {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 36px 24px;
+}
+
+.pagina-productos > h1,
+.pagina-productos > p {
+    text-align: center;
+}
+
+
+/* =========================================================
+   FILTROS
+   ========================================================= */
+
+.filtros-productos {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin: 28px 0;
+}
+
+.filtros-productos input,
+.filtros-productos select {
+    min-width: 240px;
+}
+
+
+/* =========================================================
+   GRID DE PRODUCTOS
+   ========================================================= */
+
+.productos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+
+/* =========================================================
+   TARJETA DE PRODUCTO
+   ========================================================= */
+
+.producto-card {
+    padding: 20px;
+    box-shadow: 0 2px 8px #0000000d;
+}
+
+.producto-card img {
+    display: block;
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    background: #f0efec;
+}
+
+.producto-card h2 {
+    font-size: 20px;
+}
+
+.producto-categoria {
+    color: #6b4f3a;
+    font-size: 14px;
+}
+
+.producto-precio {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.producto-botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+
+/* =========================================================
+   DETALLE DEL PRODUCTO
+   ========================================================= */
+
+.detalle-producto {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 32px;
+}
+
+.boton-volver {
+    margin-bottom: 24px;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.detalle-contenido {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 32px;
+}
+
+.detalle-imagen {
+    display: block;
+    width: 100%;
+    height: 420px;
+    border-radius: 8px;
+    background: #f0efec;
+    object-fit: contain;
+}
+
+.detalle-informacion h1 {
+    margin-top: 0;
+}
+
+
+/* =========================================================
+   CARRITO
+   ========================================================= */
+
+.pagina-carrito {
+    width: min(1100px, calc(100% - 32px));
+    min-height: 65vh;
+    margin: 0 auto;
+    padding: 32px 0 48px;
+}
+
+.carrito-producto {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid #e2e0dc;
+}
+
+.carrito-imagen {
+    display: block;
+    width: 140px;
+    height: 130px;
+    border-radius: 8px;
+    background: #f0efec;
+    object-fit: contain;
+}
+
+.carrito-producto-info h2 {
+    margin-top: 0;
+}
+
+.carrito-controles {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.carrito-controles button {
+    padding: 8px 12px;
+}
+
+.carrito-controles .boton-eliminar {
+    border-color: #a83232;
+    background: #a83232;
+}
+
+.carrito-total {
+    text-align: right;
+}
+
+
+/* =========================================================
+   CHECKOUT
+   ========================================================= */
+
+.checkout {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 28px;
+}
+
+.checkout-resumen {
+    margin: 24px 0;
+    padding: 18px;
+    border-radius: 8px;
+    background: #f6f5f2;
+}
+
+.checkout-formulario {
+    display: grid;
+    gap: 16px;
+}
+
+.checkout-formulario fieldset {
+    display: grid;
+    gap: 10px;
+    border: 1px solid #b8b8b8;
+    border-radius: 6px;
+}
+
+.opcion-entrega {
+    display: flex;
+    gap: 8px;
+}
+
+
+/* =========================================================
+   LOGIN / REGISTRO / ACCESO DENEGADO
+   ========================================================= */
+
+.auth-pagina {
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px;
+}
+
+.auth-formulario {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    max-width: 420px;
+    padding: 28px;
+}
+
+.auth-formulario h1,
+.auth-formulario p {
+    margin: 0;
+}
+
+.auth-error,
+.admin-ok {
+    margin: 0;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.auth-error {
+    color: #7a1f1f;
+    background: #f9dcdc;
+}
+
+.admin-ok {
+    color: #1f5a2a;
+    background: #dcf3e0;
+}
+
+
+/* =========================================================
+   PANEL ADMIN
+   ========================================================= */
+
+.admin {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 36px 24px;
+}
+
+.admin-formulario {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+    padding: 20px;
+}
+
+.admin-formulario h2,
+.admin-formulario .admin-botones {
+    grid-column: 1 / -1;
+}
+
+.admin-botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* La tabla hace scroll horizontal dentro de su contenedor en móvil */
+.tabla-contenedor {
+    overflow-x: auto;
+}
+
+.tabla-admin {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    background: white;
+}
+
+.tabla-admin th,
+.tabla-admin td {
+    padding: 12px;
+    border-bottom: 1px solid #e2e0dc;
+    text-align: left;
+}
+
+
+/* =========================================================
    FOOTER
    ========================================================= */
 
@@ -496,23 +593,88 @@ button {
     color: #bdbdbd;
 }
 
+
 /* =========================================================
-   RESPONSIVE - CELULARES
+   RESPONSIVE
+   Móvil:       menos de 768px (hamburguesa, 1 columna, mínimo 360px)
+   Tablet:      768px a 1279px (menú en la barra superior)
+   Escritorio:  1280px o más (layout base, contenido hasta 1200px)
    ========================================================= */
 
-@media (max-width: 600px) {
 
-    /* Encabezado */
-    .encabezado {
-        flex-wrap: wrap;
-        padding: 18px;
+/* ---------- Tablet (768px a 1279px) ---------- */
+@media (min-width: 768px) and (max-width: 1279px) {
+
+    /* Encabezado: marca y carrito arriba, menú en su propia fila */
+    .encabezado-marca {
+        flex: 1;
     }
 
     .encabezado-carrito {
-        margin-left: auto;
+        order: 2;
     }
 
-    /* Botón menú */
+    .navbar {
+        order: 3;
+        flex-basis: 100%;
+    }
+
+    .navbar-enlaces {
+        flex-wrap: wrap;
+    }
+
+    /* Inicio */
+    .inicio-contenido {
+        gap: 32px;
+    }
+
+    .inicio-texto h1 {
+        font-size: 38px;
+    }
+}
+
+
+/* ---------- Móvil (menos de 768px) ---------- */
+@media (max-width: 767px) {
+
+    body {
+        min-width: 0;
+        overflow-x: hidden;
+    }
+
+    /* Encabezado */
+    .encabezado {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        padding: 18px;
+    }
+
+    .encabezado-marca,
+    .inicio,
+    .inicio-contenido,
+    .inicio-texto,
+    .inicio-imagen {
+        min-width: 0;
+    }
+
+    .encabezado-marca p,
+    .encabezado-carrito,
+    .inicio-descripcion {
+        overflow-wrap: anywhere;
+    }
+
+    .navbar,
+    .encabezado-carrito {
+        grid-column: 1 / -1;
+    }
+
+    .encabezado-carrito {
+        margin: 0;
+        white-space: normal;
+    }
+
+    /* Botón menú (hamburguesa) */
     .navbar-boton {
         display: block;
         padding: 8px 12px;
@@ -522,15 +684,39 @@ button {
         background: transparent;
     }
 
-    /* Menú navegación */
+    /* Menú de navegación colapsable */
     .navbar-enlaces {
         display: none;
         width: 100%;
         flex-direction: column;
+        align-items: flex-start;
     }
 
     .navbar-enlaces.abierto {
         display: flex;
+    }
+
+    /* Inicio */
+    .inicio {
+        padding: 35px 18px;
+    }
+
+    .inicio-contenido {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 30px;
+    }
+
+    .inicio-texto h1 {
+        font-size: clamp(30px, 9vw, 34px);
+        overflow-wrap: anywhere;
+    }
+
+    .inicio-descripcion {
+        font-size: 16px;
+    }
+
+    .inicio-imagen-placeholder {
+        min-height: 250px;
     }
 
     /* Filtros */
@@ -544,20 +730,32 @@ button {
         min-width: 0;
     }
 
-    /* Carrito */
-    .carrito-producto {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .carrito-controles {
-        flex-wrap: wrap;
-    }
-
     /* Detalle */
     .detalle-producto {
         margin: 20px;
         padding: 20px;
+    }
+
+    .detalle-contenido {
+        grid-template-columns: 1fr;
+    }
+
+    .detalle-imagen {
+        height: 280px;
+    }
+
+    /* Carrito */
+    .carrito-producto {
+        grid-template-columns: 1fr;
+    }
+
+    .carrito-imagen {
+        width: 100%;
+        height: 220px;
+    }
+
+    .carrito-controles {
+        flex-wrap: wrap;
     }
 
     /* Checkout */
@@ -566,27 +764,9 @@ button {
         padding: 20px;
     }
 
-    /**/
-    /* Inicio */
-    .inicio {
-        padding: 35px 18px;
-    }
-
-    .inicio-contenido {
-        grid-template-columns: 1fr;
-        gap: 30px;
-    }
-
-    .inicio-texto h1 {
-        font-size: 34px;
-    }
-
-    .inicio-descripcion {
-        font-size: 16px;
-    }
-
-    .inicio-imagen-placeholder {
-        min-height: 250px;
+    /* Admin */
+    .admin {
+        padding: 24px 16px;
     }
 
     /* Footer */
@@ -595,82 +775,4 @@ button {
         gap: 30px;
         padding: 35px 18px;
     }
-}
-
-/*estilo para imagen del detalle*/
-
-.detalle-contenido {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: start;
-    gap: 32px;
-}
-
-.detalle-imagen {
-    display: block;
-    width: 100%;
-    height: 420px;
-    border-radius: 8px;
-    background: #f0efec;
-    object-fit: contain;
-}
-
-.detalle-informacion h1 {
-    margin-top: 0;
-}
-
-@media (max-width: 700px) {
-    .detalle-contenido {
-        grid-template-columns: 1fr;
-    }
-
-    .detalle-imagen {
-        height: 280px;
-    }
-}
-
-@media (max-width: 600px) {
-  body {
-    min-width: 0;
-    overflow-x: hidden;
-  }
-
-  .encabezado {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 12px;
-  }
-
-  .encabezado-marca,
-  .inicio,
-  .inicio-contenido,
-  .inicio-texto,
-  .inicio-imagen {
-    min-width: 0;
-  }
-
-  .encabezado-marca p,
-  .encabezado-carrito,
-  .inicio-descripcion {
-    overflow-wrap: anywhere;
-  }
-
-  .navbar,
-  .encabezado-carrito {
-    grid-column: 1 / -1;
-  }
-
-  .encabezado-carrito {
-    margin: 0;
-    white-space: normal;
-  }
-
-  .inicio-contenido {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .inicio-texto h1 {
-    font-size: clamp(30px, 9vw, 34px);
-    overflow-wrap: anywhere;
-  }
 }
