@@ -101,7 +101,9 @@ function App() {
   return (
     <Routes>
       <Route
-        element={<LayoutPrincipal cantidadEnCarrito={cantidadEnCarrito} />}
+        element={
+          <LayoutPrincipal
+            cantidadEnCarrito={cantidadEnCarrito}/>}
       >
         <Route
           index

@@ -92,7 +92,7 @@ button {
 
 /* Etiquetas de formulario (texto sobre el campo) */
 .filtros-productos label,
-.checkout-formulario > label,
+.checkout-formulario>label,
 .auth-formulario label,
 .admin-formulario label {
     display: grid;
@@ -115,17 +115,24 @@ button {
 
 /* =========================================================
    ENCABEZADO / NAVBAR
+   Escritorio: marca | buscador | sesión, y debajo el menú
    ========================================================= */
 
 .encabezado {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas:
+        "marca buscador sesion"
+        "navbar navbar navbar";
     align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    padding: 20px max(24px, calc((100% - 1200px) / 2));
+    gap: 16px 24px;
+    padding: 16px max(24px, calc((100% - 1200px) / 2));
     color: white;
     background: #202124;
+}
+
+.encabezado-marca {
+    grid-area: marca;
 }
 
 .encabezado-marca h1 {
@@ -134,13 +141,129 @@ button {
 }
 
 .encabezado-marca p {
-    margin: 6px 0 0;
+    margin: 4px 0 0;
     color: #d4d4d4;
 }
 
-.encabezado-carrito {
-    margin: 0;
-    white-space: nowrap;
+/* Buscador */
+.buscador-contenedor {
+    position: relative;
+    grid-area: buscador;
+}
+
+.buscador-contenedor {
+    justify-self: center;
+    width: 100%;
+    max-width: 480px;
+}
+
+.buscador input {
+    width: 280px;
+    padding: 8px 12px;
+    border: 1px solid #b8b8b8;
+    border-radius: 6px;
+    background: white;
+}
+
+.buscador button {
+    padding: 8px 14px;
+    border: 1px solid white;
+    border-radius: 6px;
+    color: white;
+    background: transparent;
+}
+
+.buscador button:hover {
+    border-color: #7b3f20;
+    background: #7b3f20;
+}
+
+/* Lista de resultados del buscador */
+.buscador-resultados {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    max-height: 360px;
+    margin: 8px 0 0;
+    padding: 6px 0;
+    overflow-y: auto;
+    border: 1px solid #e2e0dc;
+    border-radius: 8px;
+    color: #202124;
+    background: white;
+    box-shadow: 0 6px 16px #00000026;
+    list-style: none;
+}
+
+.buscador-resultados a {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 14px;
+    color: #202124;
+    text-decoration: none;
+}
+
+.buscador-resultados a:hover {
+    background: #f6f5f2;
+}
+
+.buscador-resultado-detalle {
+    color: #6b6b6b;
+    font-size: 13px;
+}
+
+.buscador-sin-resultados {
+    padding: 8px 14px;
+    color: #6b6b6b;
+}
+
+/* Botones de sesión */
+.encabezado-sesion {
+    grid-area: sesion;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.encabezado-usuario {
+    color: #d4d4d4;
+}
+
+.boton-header {
+    padding: 8px 14px;
+    border: 1px solid white;
+    border-radius: 6px;
+    color: white;
+    background: transparent;
+    text-decoration: none;
+}
+
+.boton-header:hover {
+    border-color: #7b3f20;
+    background: #7b3f20;
+}
+
+.boton-header-solido {
+    border-color: #7b3f20;
+    background: #7b3f20;
+}
+
+.boton-header-solido:hover {
+    border-color: #633219;
+    background: #633219;
+}
+
+/* Menú de navegación */
+.navbar {
+    grid-area: navbar;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
 }
 
 .navbar-enlaces {
@@ -158,21 +281,29 @@ button {
     text-decoration: underline;
 }
 
+.navbar-enlaces a.activo {
+    font-weight: bold;
+}
+
+
 .navbar-boton {
     display: none;
 }
 
-/* Sesión: nombre del usuario y botón salir */
-.navbar-usuario {
-    color: #d4d4d4;
-}
-
-.navbar-salir {
-    padding: 4px 10px;
-    border: 1px solid white;
+/* Botón del carrito */
+.boton-carrito {
+    padding: 8px 14px;
     border-radius: 6px;
     color: white;
-    background: transparent;
+    background: #7b3f20;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.boton-carrito:hover {
+    background: #633219;
 }
 
 
@@ -248,8 +379,8 @@ button {
     padding: 36px 24px;
 }
 
-.pagina-productos > h1,
-.pagina-productos > p {
+.pagina-productos>h1,
+.pagina-productos>p {
     text-align: center;
 }
 
@@ -600,22 +731,34 @@ button {
    ========================================================= */
 
 
+/* ---------- Tablet y menores (menos de 1280px) ---------- */
+@media (max-width: 1279px) {
+
+    /* Encabezado: marca y sesión arriba, buscador y menú debajo */
+    .encabezado {
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "marca sesion"
+            "buscador buscador"
+            "navbar navbar";
+    }
+
+    .buscador-contenedor {
+        justify-self: center;
+        width: 100%;
+        max-width: 480px;
+    }
+
+    .buscador input {
+        flex: 1;
+        width: auto;
+        min-width: 0;
+    }
+}
+
+
 /* ---------- Tablet (768px a 1279px) ---------- */
 @media (min-width: 768px) and (max-width: 1279px) {
-
-    /* Encabezado: marca y carrito arriba, menú en su propia fila */
-    .encabezado-marca {
-        flex: 1;
-    }
-
-    .encabezado-carrito {
-        order: 2;
-    }
-
-    .navbar {
-        order: 3;
-        flex-basis: 100%;
-    }
 
     .navbar-enlaces {
         flex-wrap: wrap;
@@ -640,12 +783,15 @@ button {
         overflow-x: hidden;
     }
 
-    /* Encabezado */
+    /* Encabezado: todo en una columna */
     .encabezado {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 12px;
-        padding: 18px;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            "marca"
+            "buscador"
+            "sesion"
+            "navbar";
+        padding: 16px 18px;
     }
 
     .encabezado-marca,
@@ -657,24 +803,27 @@ button {
     }
 
     .encabezado-marca p,
-    .encabezado-carrito,
     .inicio-descripcion {
         overflow-wrap: anywhere;
     }
 
-    .navbar,
-    .encabezado-carrito {
-        grid-column: 1 / -1;
+    .buscador-contenedor {
+        max-width: none;
     }
 
-    .encabezado-carrito {
-        margin: 0;
-        white-space: normal;
+    .encabezado-sesion {
+        justify-content: flex-start;
     }
 
-    /* Botón menú (hamburguesa) */
+    /* Menú: hamburguesa y carrito en la misma fila */
+    .navbar {
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
     .navbar-boton {
         display: block;
+        order: 1;
         padding: 8px 12px;
         border: 1px solid white;
         border-radius: 6px;
@@ -682,9 +831,13 @@ button {
         background: transparent;
     }
 
-    /* Menú de navegación colapsable */
+    .boton-carrito {
+        order: 2;
+    }
+
     .navbar-enlaces {
         display: none;
+        order: 3;
         width: 100%;
         flex-direction: column;
         align-items: flex-start;
