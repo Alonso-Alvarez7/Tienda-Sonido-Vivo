@@ -26,9 +26,11 @@ function Inicio() {
                 </div>
 
                 <div className="inicio-imagen">
-                    <div className="inicio-imagen-placeholder">
-                        <span>Imagen principal</span>
-                    </div>
+                    <img
+                        className="inicio-imagen-principal"
+                        src="/imagen/img/PortadaInicio.png"
+                        alt="Instrumentos y equipos musicales de Sonido Vivo"
+                    />
                 </div>
 
             </div>

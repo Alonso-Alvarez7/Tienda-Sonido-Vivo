@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import Inicio from "./pages/Inicio";
-import Productos from "./pages/Productos";
-import DetalleProducto from "./pages/DetalleProducto";
-import Carrito from "./pages/Carrito";
-import Checkout from "./pages/Checkout";
+import LayoutPrincipal from "./layouts/LayoutPrincipal.jsx";
+import RutaProtegida from "./components/RutaProtegida.jsx";
+import Inicio from "./pages/Inicio.jsx";
+import Productos from "./pages/Productos.jsx";
+import DetalleProducto from "./pages/DetalleProducto.jsx";
+import Carrito from "./pages/Carrito.jsx";
+import Checkout from "./pages/Checkout.jsx";
+import Login from "./pages/Login.jsx";
+import Registro from "./pages/Registro.jsx";
+import Admin from "./pages/Admin.jsx";
+import NoAutorizado from "./pages/NoAutorizado.jsx";
 import { productos } from "./data/productos";
-import "./styles.css";
+import { ROLES } from "./auth/auth";
 
 function PaginaDetalle({ onAgregar }) {
   const { id } = useParams();
@@ -34,6 +38,7 @@ function PaginaDetalle({ onAgregar }) {
   );
 }
 
+/** Versión 03: /admin es una ruta protegida (solo rol administrador). */
 function App() {
   const navegar = useNavigate();
 
@@ -94,12 +99,14 @@ function App() {
   );
 
   return (
-    <>
-      <Header cantidadEnCarrito={cantidadEnCarrito} />
-
-      <Routes>
+    <Routes>
+      <Route
+        element={
+          <LayoutPrincipal
+            cantidadEnCarrito={cantidadEnCarrito}/>}
+      >
         <Route
-          path="/"
+          index
           element={
             <>
               <Inicio />
@@ -114,12 +121,12 @@ function App() {
         />
 
         <Route
-          path="/productos/:id"
+          path="productos/:id"
           element={<PaginaDetalle onAgregar={agregarAlCarrito} />}
         />
 
         <Route
-          path="/carrito"
+          path="carrito"
           element={
             <Carrito
               carrito={carrito}
@@ -131,13 +138,26 @@ function App() {
         />
 
         <Route
-          path="/checkout"
+          path="checkout"
           element={
             <Checkout
               carrito={carrito}
               onVolver={() => navegar("/carrito")}
               onConfirmar={() => setCarrito([])}
             />
+          }
+        />
+
+        <Route path="login" element={<Login />} />
+        <Route path="registro" element={<Registro />} />
+        <Route path="no-autorizado" element={<NoAutorizado />} />
+
+        <Route
+          path="admin"
+          element={
+            <RutaProtegida roles={[ROLES.ADMIN]}>
+              <Admin />
+            </RutaProtegida>
           }
         />
 
@@ -150,10 +170,8 @@ function App() {
             </main>
           }
         />
-      </Routes>
-
-      <Footer />
-    </>
+      </Route>
+    </Routes>
   );
 }
 
