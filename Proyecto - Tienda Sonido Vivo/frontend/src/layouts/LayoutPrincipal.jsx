@@ -9,8 +9,8 @@ import Footer from "../components/Footer.jsx";
  * <Outlet /> es donde React Router muestra la página activa.
  * El carrito vive en App.jsx, por eso la cantidad y el total llegan por props.
  */
-export default function LayoutPrincipal({ cantidadEnCarrito}) {
-  const { pathname, search, hash } = useLocation();
+export default function LayoutPrincipal({ cantidadEnCarrito }) {
+  const { pathname, search, hash, key } = useLocation();
 
   // Al navegar: baja hasta el ancla (#catalogo) o vuelve arriba si no hay ninguna
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function LayoutPrincipal({ cantidadEnCarrito}) {
     } else {
       window.scrollTo(0, 0);
     }
-  }, [pathname, search, hash]);
+  }, [pathname, search, hash, key]);
 
   return (
     <>
