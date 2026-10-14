@@ -1,21 +1,21 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter} from "react-router-dom";
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 
-import App from './App.jsx';
-import './styles.css';
+import App from "./App.jsx";
+import { AuthProvider } from "./auth/AuthContext.js";
+import "./styles.css";
 
 /**
-* T02.
-* BrowserRouter habilita la navegación mediante URLs
-* para toda nuestra aplicación React.
-*/
-
-createRoot(document.getElementById('root')).render(
+ * BrowserRouter habilita la navegación mediante URLs.
+ * AuthProvider comparte la sesión (usuario, login, logout) con toda la app.
+ */
+createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
-
-  </React.StrictMode>,
+  </React.StrictMode>
 );
