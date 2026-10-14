@@ -149,12 +149,7 @@ button {
 .buscador-contenedor {
     position: relative;
     grid-area: buscador;
-}
-
-.buscador-contenedor {
     justify-self: center;
-    width: 100%;
-    max-width: 480px;
 }
 
 .buscador input {
@@ -284,7 +279,6 @@ button {
 .navbar-enlaces a.activo {
     font-weight: bold;
 }
-
 
 .navbar-boton {
     display: none;
@@ -866,7 +860,6 @@ button {
         font-size: 16px;
     }
 
-    .inicio-imagen-placeholder,
     .inicio-imagen-principal {
         min-height: 250px;
         height: 250px;
