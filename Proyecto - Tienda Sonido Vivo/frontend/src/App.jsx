@@ -14,6 +14,7 @@ import Admin from "./pages/Admin.jsx";
 import NoAutorizado from "./pages/NoAutorizado.jsx";
 import { productos } from "./data/productos";
 import { ROLES } from "./auth/auth";
+import Contacto from "./pages/Contacto.jsx";
 
 function PaginaDetalle({ onAgregar }) {
   const { id } = useParams();
@@ -58,7 +59,7 @@ function App() {
   function agregarAlCarrito(producto) {
     setCarrito((carritoActual) => {
       const productoEnCarrito = carritoActual.find(
-        (item) => item.id === producto.id
+        (item) => item.id === producto.id,
       );
 
       if (productoEnCarrito) {
@@ -69,7 +70,7 @@ function App() {
         return carritoActual.map((item) =>
           item.id === producto.id
             ? { ...item, cantidad: item.cantidad + 1 }
-            : item
+            : item,
         );
       }
 
@@ -82,29 +83,28 @@ function App() {
       carritoActual.map((item) =>
         item.id === id
           ? { ...item, cantidad: Math.min(nuevaCantidad, item.stock) }
-          : item
-      )
+          : item,
+      ),
     );
   }
 
   function eliminarDelCarrito(id) {
     setCarrito((carritoActual) =>
-      carritoActual.filter((item) => item.id !== id)
+      carritoActual.filter((item) => item.id !== id),
     );
   }
 
   const cantidadEnCarrito = carrito.reduce(
     (total, producto) => total + producto.cantidad,
-    0
+    0,
   );
 
   return (
     <Routes>
       <Route
-        element={
-          <LayoutPrincipal
-            cantidadEnCarrito={cantidadEnCarrito}/>}
+        element={<LayoutPrincipal cantidadEnCarrito={cantidadEnCarrito} />}
       >
+        <Route path="contacto" element={<Contacto />} />
         <Route
           index
           element={
