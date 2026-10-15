@@ -3,6 +3,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { ROLES, validarCorreo } from "../auth/auth";
 
+const DESTINO_POR_ROL = {
+    [ROLES.ADMIN]: "/admin",
+    [ROLES.VENDEDOR]: "/vendedor",
+    [ROLES.CLIENTE]: "/",
+};
+
 function Login() {
     const { login } = useAuth();
     const navegar = useNavigate();
@@ -29,7 +35,7 @@ function Login() {
         setCargando(true);
         try {
             const sesion = await login(correo, clave);
-            const destinoPorRol = sesion.rol === ROLES.CLIENTE ? "/" : "/admin";
+            const destinoPorRol = DESTINO_POR_ROL[sesion.rol] ?? "/";
             navegar(ubicacion.state?.desde ?? destinoPorRol, { replace: true });
         } catch (e) {
             setError(e.message);

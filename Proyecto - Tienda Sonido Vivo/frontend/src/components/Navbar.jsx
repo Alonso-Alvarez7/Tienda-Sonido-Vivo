@@ -14,6 +14,9 @@ function Navbar({ cantidadEnCarrito }) {
   // Marca el enlace de la página actual (en negrita)
   const claseActiva = ({ isActive }) => (isActive ? "activo" : undefined);
 
+  const esVendedor =
+    usuario?.rol === ROLES.VENDEDOR || usuario?.rol === ROLES.ADMIN;
+
   return (
     <nav className="navbar">
       <button
@@ -41,6 +44,18 @@ function Navbar({ cantidadEnCarrito }) {
         <NavLink to="/contacto" className={claseActiva} onClick={cerrarMenu}>
           Contacto
         </NavLink>
+
+        {usuario?.rol === ROLES.CLIENTE && (
+          <NavLink to="/mis-pedidos" className={claseActiva} onClick={cerrarMenu}>
+            Mis pedidos
+          </NavLink>
+        )}
+
+        {esVendedor && (
+          <NavLink to="/vendedor" className={claseActiva} onClick={cerrarMenu}>
+            Panel vendedor
+          </NavLink>
+        )}
 
         {usuario?.rol === ROLES.ADMIN && (
           <NavLink to="/admin" className={claseActiva} onClick={cerrarMenu}>
