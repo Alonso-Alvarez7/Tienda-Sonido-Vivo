@@ -3,6 +3,7 @@ import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 
 import LayoutPrincipal from "./layouts/LayoutPrincipal.jsx";
 import RutaProtegida from "./components/RutaProtegida.jsx";
+import RegistroPedido from "./components/RegistroPedido.jsx";
 import Inicio from "./pages/Inicio.jsx";
 import Productos from "./pages/Productos.jsx";
 import DetalleProducto from "./pages/DetalleProducto.jsx";
@@ -11,6 +12,8 @@ import Checkout from "./pages/Checkout.jsx";
 import Login from "./pages/Login.jsx";
 import Registro from "./pages/Registro.jsx";
 import Admin from "./pages/Admin.jsx";
+import Vendedor from "./pages/Vendedor.jsx";
+import MisPedidos from "./pages/MisPedidos.jsx";
 import NoAutorizado from "./pages/NoAutorizado.jsx";
 import { productos } from "./data/productos";
 import { ROLES } from "./auth/auth";
@@ -41,7 +44,12 @@ function PaginaDetalle({ onAgregar }) {
   );
 }
 
-/** Versión 03: /admin es una ruta protegida (solo rol administrador). */
+/**
+ * Rutas protegidas por rol:
+ * - /admin: solo administrador.
+ * - /vendedor: vendedor y administrador.
+ * - /mis-pedidos: cliente.
+ */
 function App() {
   const navegar = useNavigate();
 
@@ -144,11 +152,13 @@ function App() {
         <Route
           path="checkout"
           element={
-            <Checkout
-              carrito={carrito}
-              onVolver={() => navegar("/carrito")}
-              onConfirmar={() => setCarrito([])}
-            />
+            <RegistroPedido carrito={carrito}>
+              <Checkout
+                carrito={carrito}
+                onVolver={() => navegar("/carrito")}
+                onConfirmar={() => setCarrito([])}
+              />
+            </RegistroPedido>
           }
         />
 
@@ -161,6 +171,24 @@ function App() {
           element={
             <RutaProtegida roles={[ROLES.ADMIN]}>
               <Admin />
+            </RutaProtegida>
+          }
+        />
+
+        <Route
+          path="vendedor"
+          element={
+            <RutaProtegida roles={[ROLES.VENDEDOR, ROLES.ADMIN]}>
+              <Vendedor />
+            </RutaProtegida>
+          }
+        />
+
+        <Route
+          path="mis-pedidos"
+          element={
+            <RutaProtegida roles={[ROLES.CLIENTE]}>
+              <MisPedidos />
             </RutaProtegida>
           }
         />
