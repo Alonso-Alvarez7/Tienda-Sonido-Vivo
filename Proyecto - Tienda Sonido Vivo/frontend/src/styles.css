@@ -1050,3 +1050,329 @@ button {
     padding: 24px;
   }
 }
+
+/* =========================================
+   PAGINA NOSOTROS
+   ========================================= */
+
+.pagina-nosotros {
+  display: grid;
+  gap: 56px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 24px 64px;
+}
+
+.nosotros-quienes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 40px;
+}
+
+.nosotros-etiqueta {
+  margin: 0 0 8px;
+  color: #7b3f20;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.nosotros-texto h1 {
+  margin: 0 0 18px;
+  font-size: clamp(32px, 5vw, 44px);
+}
+
+.nosotros-texto p {
+  color: #555;
+  line-height: 1.7;
+}
+
+.nosotros-imagen img {
+  display: block;
+  width: 100%;
+  height: 380px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.nosotros-seccion {
+  text-align: center;
+}
+
+.nosotros-seccion h2 {
+  margin: 0 0 10px;
+  font-size: 30px;
+}
+
+.nosotros-seccion-texto {
+  max-width: 640px;
+  margin: 0 auto 24px;
+  color: #5b5b5b;
+  line-height: 1.6;
+}
+
+/* isolation evita que el mapa quede por encima de la lista del buscador */
+.nosotros-mapa-contenedor {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid #e2e0dc;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.nosotros-mapa {
+  width: 100%;
+  height: 420px;
+}
+
+.nosotros-sucursales {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.nosotros-sucursal {
+  min-width: 260px;
+  padding: 20px;
+  border: 1px solid #e2e0dc;
+  border-radius: 10px;
+  background: white;
+  text-align: left;
+}
+
+.nosotros-sucursal h3 {
+  margin: 0 0 8px;
+}
+
+.nosotros-sucursal p {
+  margin: 4px 0;
+  color: #555;
+}
+
+.nosotros-sucursal .nosotros-sucursal-retiro {
+  color: #1f5a2a;
+  font-weight: bold;
+}
+
+.nosotros-como-llegar {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  color: white;
+  background: #7b3f20;
+  text-decoration: none;
+}
+
+.nosotros-como-llegar:hover {
+  background: #633219;
+}
+
+.nosotros-regiones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin: 24px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nosotros-region {
+  min-width: 260px;
+  padding: 20px 24px;
+  border: 1px solid #e2e0dc;
+  border-left: 5px solid #7b3f20;
+  border-radius: 10px;
+  background: white;
+  text-align: left;
+}
+
+.nosotros-region h3 {
+  margin: 0 0 6px;
+}
+
+.nosotros-region p {
+  margin: 0;
+  color: #555;
+}
+
+/* =========================================
+   PAGINA BLOG
+   ========================================= */
+
+.pagina-blog {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 24px 64px;
+}
+
+.blog-intro {
+  max-width: 700px;
+  margin: 0 auto 28px;
+  text-align: center;
+}
+
+.blog-etiqueta {
+  margin: 0;
+  color: #7b3f20;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.blog-intro h1 {
+  margin: 8px 0 14px;
+  font-size: clamp(30px, 5vw, 42px);
+}
+
+.blog-intro > p:last-child {
+  color: #5b5b5b;
+  line-height: 1.7;
+}
+
+.blog-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.blog-filtro {
+  padding: 8px 16px;
+  border: 1px solid #7b3f20;
+  border-radius: 999px;
+  color: #7b3f20;
+  background: white;
+}
+
+.blog-filtro:hover,
+.blog-filtro.activo {
+  color: white;
+  background: #7b3f20;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: start;
+  gap: 24px;
+}
+
+.blog-card {
+  overflow: hidden;
+  border: 1px solid #e2e0dc;
+  border-radius: 10px;
+  background: white;
+  box-shadow: 0 2px 8px #0000000d;
+}
+
+.blog-card img {
+  display: block;
+  width: 100%;
+  height: 200px;
+  background: #f0efec;
+  object-fit: cover;
+}
+
+.blog-card-cuerpo {
+  padding: 20px;
+}
+
+.blog-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+  color: #6b6b6b;
+  font-size: 13px;
+}
+
+.blog-card-categoria {
+  padding: 3px 10px;
+  border-radius: 999px;
+  color: #7b3f20;
+  background: #f1e6df;
+  font-weight: bold;
+}
+
+.blog-card-cuerpo h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+.blog-card-cuerpo p {
+  line-height: 1.6;
+}
+
+.blog-card-boton {
+  padding: 8px 14px;
+  border: 1px solid #7b3f20;
+  border-radius: 6px;
+  color: #7b3f20;
+  background: white;
+}
+
+.blog-card-boton:hover {
+  color: white;
+  background: #7b3f20;
+}
+
+.blog-filtro:focus-visible,
+.blog-card-boton:focus-visible,
+.nosotros-como-llegar:focus-visible {
+  outline: 2px solid #202124;
+  outline-offset: 3px;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .blog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Escritorio */
+@media (min-width: 1280px) {
+  .blog-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Móvil */
+@media (max-width: 767px) {
+  .pagina-nosotros {
+    gap: 40px;
+    padding: 32px 16px 48px;
+  }
+
+  .nosotros-quienes {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .nosotros-imagen img {
+    height: 250px;
+  }
+
+  .nosotros-mapa {
+    height: 320px;
+  }
+
+  .nosotros-sucursal,
+  .nosotros-region {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pagina-blog {
+    padding: 32px 16px 48px;
+  }
+}

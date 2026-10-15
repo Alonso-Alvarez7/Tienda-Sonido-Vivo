@@ -15,6 +15,8 @@ import NoAutorizado from "./pages/NoAutorizado.jsx";
 import { productos } from "./data/productos";
 import { ROLES } from "./auth/auth";
 import Contacto from "./pages/Contacto.jsx";
+import Nosotros from "./pages/Nosotros.jsx";
+import Blog from "./pages/Blog.jsx";
 
 function PaginaDetalle({ onAgregar }) {
   const { id } = useParams();
@@ -105,6 +107,8 @@ function App() {
         element={<LayoutPrincipal cantidadEnCarrito={cantidadEnCarrito} />}
       >
         <Route path="contacto" element={<Contacto />} />
+        <Route path="nosotros" element={<Nosotros />} />
+        <Route path="blog" element={<Blog />} />
         <Route
           index
           element={
