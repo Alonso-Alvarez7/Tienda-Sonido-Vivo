@@ -91,7 +91,7 @@ button {
 
 /* Etiquetas de formulario (texto sobre el campo) */
 .filtros-productos label,
-.checkout-formulario > label,
+.checkout-formulario>label,
 .auth-formulario label,
 .admin-formulario label {
   display: grid;
@@ -147,12 +147,14 @@ button {
 .buscador-contenedor {
   position: relative;
   grid-area: buscador;
-}
-
-.buscador-contenedor {
   justify-self: center;
   width: 100%;
   max-width: 480px;
+}
+
+.buscador {
+  display: flex;
+  gap: 8px;
 }
 
 .buscador input {
@@ -374,8 +376,8 @@ button {
   padding: 36px 24px;
 }
 
-.pagina-productos > h1,
-.pagina-productos > p {
+.pagina-productos>h1,
+.pagina-productos>p {
   text-align: center;
 }
 
@@ -717,6 +719,7 @@ button {
 
 /* ---------- Tablet y menores (menos de 1280px) ---------- */
 @media (max-width: 1279px) {
+
   /* Encabezado: marca y sesión arriba, buscador y menú debajo */
   .encabezado {
     grid-template-columns: 1fr auto;
@@ -937,7 +940,7 @@ button {
   font-size: clamp(32px, 5vw, 44px);
 }
 
-.contacto-intro > p:last-child {
+.contacto-intro>p:last-child {
   color: #5b5b5b;
   line-height: 1.7;
 }
@@ -1231,7 +1234,7 @@ button {
   font-size: clamp(30px, 5vw, 42px);
 }
 
-.blog-intro > p:last-child {
+.blog-intro>p:last-child {
   color: #5b5b5b;
   line-height: 1.7;
 }
@@ -1380,128 +1383,184 @@ button {
 /* ===== Panel del vendedor y pedidos ===== */
 .vendedor,
 .mis-pedidos {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 1.5rem 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
 }
 
 .vendedor-pestanas {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 1rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
 }
 
 .vendedor-pestana {
-    background: #ffffff;
-    color: #7b3f20;
-    border: 2px solid #7b3f20;
-    border-radius: 6px;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    font-weight: 600;
+  background: #ffffff;
+  color: #7b3f20;
+  border: 2px solid #7b3f20;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
 }
 
 .vendedor-pestana.activa {
-    background: #7b3f20;
-    color: #ffffff;
+  background: #7b3f20;
+  color: #ffffff;
 }
 
 .vendedor-filtros {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 1rem;
-    margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .vendedor-filtros label {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .pedidos-lista {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
 }
 
 .pedido-tarjeta {
-    background: #ffffff;
-    border: 1px solid #d9d9d9;
-    border-radius: 8px;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  background: #ffffff;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .pedido-cabecera {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .pedido-cabecera h2 {
-    margin: 0;
-    font-size: 1.1rem;
+  margin: 0;
+  font-size: 1.1rem;
 }
 
 .pedido-tarjeta p {
-    margin: 0;
+  margin: 0;
 }
 
 .pedido-fecha {
-    color: #5f6368;
-    font-size: 0.9rem;
+  color: #5f6368;
+  font-size: 0.9rem;
 }
 
 .pedido-items {
-    margin: 0;
-    padding-left: 1.2rem;
+  margin: 0;
+  padding-left: 1.2rem;
 }
 
 .pedido-total {
-    font-weight: 700;
+  font-weight: 700;
 }
 
 .pedido-estado {
-    padding: 0.2rem 0.7rem;
-    border-radius: 999px;
-    font-size: 0.85rem;
-    font-weight: 600;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .pedido-estado--preparacion {
-    background: #fff3cd;
-    color: #7a5b00;
+  background: #fff3cd;
+  color: #7a5b00;
 }
 
 .pedido-estado--despachado {
-    background: #d6e8ff;
-    color: #0b3d80;
+  background: #d6e8ff;
+  color: #0b3d80;
 }
 
 .pedido-estado--entregado {
-    background: #d4edda;
-    color: #1b5e20;
+  background: #d4edda;
+  color: #1b5e20;
 }
 
 .stock-bajo td {
-    background: #fdecea;
+  background: #fdecea;
 }
 
 @media (min-width: 768px) {
-    .pedidos-lista {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .pedidos-lista {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (min-width: 1280px) {
-    .pedidos-lista {
-        grid-template-columns: repeat(3, 1fr);
-    }
+  .pedidos-lista {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ===== Panel del vendedor: campos y botones (complementa el bloque anterior) ===== */
+.vendedor-filtros input,
+.vendedor-filtros select,
+.pedido-tarjeta select {
+  padding: 10px;
+  border: 1px solid #b8b8b8;
+  border-radius: 6px;
+  background: white;
+}
+
+.vendedor-filtros input {
+  min-width: 240px;
+}
+
+.vendedor-filtros .boton-secundario {
+  padding: 10px 14px;
+  border: 1px solid #7b3f20;
+  border-radius: 6px;
+  color: #7b3f20;
+  background: white;
+}
+
+.vendedor-filtros .boton-secundario:hover {
+  color: white;
+  background: #7b3f20;
+}
+
+.pedido-tarjeta label {
+  display: grid;
+  gap: 6px;
+  margin-top: 6px;
+  font-weight: bold;
+}
+
+.pedido-tarjeta select {
+  width: 100%;
+  font-weight: normal;
+}
+
+.vendedor-pestana:focus-visible,
+.vendedor-filtros .boton-secundario:focus-visible {
+  outline: 2px solid #202124;
+  outline-offset: 3px;
+}
+
+/* Móvil: filtros a todo el ancho */
+@media (max-width: 767px) {
+
+  .vendedor-filtros label,
+  .vendedor-filtros input,
+  .vendedor-filtros select {
+    width: 100%;
+    min-width: 0;
+  }
 }
