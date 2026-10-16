@@ -1,6 +1,10 @@
 // Pedidos y stock (simulados con localStorage).
 // Cuando exista el microservicio Spring Boot (/api/pedidos), solo cambia el interior de estas funciones.
 import { productos } from "./productos";
+import { leer, guardar } from "../utils/almacenamiento";
+
+// Se re-exporta para que los demás archivos sigan importándola desde aquí.
+export { codigoPedido } from "../utils/formatoPedido";
 
 export const ESTADOS_PEDIDO = ["En preparación", "Despachado", "Entregado"];
 
@@ -12,25 +16,6 @@ export const CLASE_ESTADO = {
 
 const CLAVE_PEDIDOS = "sonidoVivoPedidos";
 const CLAVE_STOCK = "sonidoVivoStock";
-
-/* ---------- Utilidades ---------- */
-
-function leer(clave, porDefecto) {
-    try {
-        const guardado = localStorage.getItem(clave);
-        return guardado ? JSON.parse(guardado) : porDefecto;
-    } catch {
-        return porDefecto;
-    }
-}
-
-function guardar(clave, valor) {
-    localStorage.setItem(clave, JSON.stringify(valor));
-}
-
-export function codigoPedido(id) {
-    return `PED-${String(id).padStart(4, "0")}`;
-}
 
 /* ---------- Pedidos ---------- */
 
