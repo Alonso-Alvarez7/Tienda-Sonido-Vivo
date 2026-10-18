@@ -1,53 +1,18 @@
 // Lógica de autenticación y usuarios (simulada con localStorage).
 // Cuando exista el microservicio Spring Boot, solo cambia el interior de estas funciones.
 
+import { hashearClave } from "../utils/seguridad";
+import { validarCorreo, validarClave } from "../utils/validaciones";
+import { leerUsuarios, guardarUsuarios, sinClave } from "../utils/almacenamientoUsuarios";
+
 export const ROLES = {
     ADMIN: "administrador",
     VENDEDOR: "vendedor",
     CLIENTE: "cliente",
 };
 
-const CLAVE_USUARIOS = "sonidoVivoUsuarios";
 const CLAVE_SESION = "sonidoVivoSesion";
 const DURACION_SESION_MS = 8 * 60 * 60 * 1000; // 8 horas
-
-/* ---------- Utilidades ---------- */
-
-// La clave nunca se guarda en texto plano: se guarda su hash SHA-256.
-export async function hashearClave(clave) {
-    const datos = new TextEncoder().encode(clave);
-    const buffer = await crypto.subtle.digest("SHA-256", datos);
-    return Array.from(new Uint8Array(buffer))
-        .map((byte) => byte.toString(16).padStart(2, "0"))
-        .join("");
-}
-
-export function validarCorreo(correo) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
-}
-
-// Mínimo 8 caracteres, al menos una letra y un número.
-export function validarClave(clave) {
-    return clave.length >= 8 && /[A-Za-z]/.test(clave) && /\d/.test(clave);
-}
-
-function leerUsuarios() {
-    try {
-        const guardados = localStorage.getItem(CLAVE_USUARIOS);
-        return guardados ? JSON.parse(guardados) : null;
-    } catch {
-        return null;
-    }
-}
-
-function guardarUsuarios(usuarios) {
-    localStorage.setItem(CLAVE_USUARIOS, JSON.stringify(usuarios));
-}
-
-function sinClave(usuario) {
-    const { claveHash, ...publico } = usuario;
-    return publico;
-}
 
 /* ---------- Datos iniciales ---------- */
 
@@ -198,3 +163,6 @@ export function cambiarEstadoUsuario(id, activo) {
 function contarAdminsActivos(usuarios) {
     return usuarios.filter((u) => u.rol === ROLES.ADMIN && u.activo).length;
 }
+
+export { hashearClave } from "../utils/seguridad";
+export { validarCorreo, validarClave } from "../utils/validaciones";
