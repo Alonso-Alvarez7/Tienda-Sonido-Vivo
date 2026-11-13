@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">12.5% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>1/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">12.5% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>1/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -88,47 +88,47 @@
 <a name='L23'></a><a href='#L23'>23</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// Lectura y escritura de usuarios en localStorage (simulado).
 // Cuando exista el microservicio Spring Boot, esto se reemplaza por llamadas a la API.
 &nbsp;
 const CLAVE_USUARIOS = "sonidoVivoUsuarios";
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >leerUsuarios() {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-        const guardados = <span class="cstat-no" title="statement not covered" >localStorage.getItem(CLAVE_USUARIOS);</span>
-<span class="cstat-no" title="statement not covered" >        return guardados ? JSON.parse(guardados) : null;</span>
+export function leerUsuarios() {
+    try {
+        const guardados = localStorage.getItem(CLAVE_USUARIOS);
+        return guardados ? JSON.parse(guardados) : null;
     } catch {
-<span class="cstat-no" title="statement not covered" >        return null;</span>
+        return null;
     }
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >guardarUsuarios(u</span>suarios) {
-<span class="cstat-no" title="statement not covered" >    localStorage.setItem(CLAVE_USUARIOS, JSON.stringify(usuarios));</span>
+export function guardarUsuarios(usuarios) {
+    localStorage.setItem(CLAVE_USUARIOS, JSON.stringify(usuarios));
 }
 &nbsp;
 // Devuelve el usuario sin su hash de clave.
-export function <span class="fstat-no" title="function not covered" >sinClave(u</span>suario) {
-    const { claveHash, ...publico } = <span class="cstat-no" title="statement not covered" >usuario;</span>
-<span class="cstat-no" title="statement not covered" >    return publico;</span>
+export function sinClave(usuario) {
+    const { claveHash, ...publico } = usuario;
+    return publico;
 }</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -136,7 +136,7 @@ export function <span class="fstat-no" title="function not covered" >sinClave(u<
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-10-18T00:59:12.313Z
+                at 2026-10-18T02:35:05.406Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
