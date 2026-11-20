@@ -1,4 +1,4 @@
-package cl.tienda.sonidoVivo.Api.productos.model;
+package cl.tienda.sonidoVivo.Api.producto.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
