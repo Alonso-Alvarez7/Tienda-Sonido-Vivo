@@ -1,18 +1,12 @@
-import { obtenerSesion } from "../auth/auth";
-
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
 async function solicitar(endpoint, opciones = {}) {
-    const sesion = obtenerSesion();
-    const headers = {
-        "Content-Type": "application/json",
-        ...(sesion?.token ? { Authorization: `Bearer ${sesion.token}` } : {}),
-        ...opciones.headers,
-    };
-
     const respuesta = await fetch(`${API_URL}${endpoint}`, {
+        headers: {
+            "Content-Type": "application/json",
+            ...opciones.headers,
+        },
         ...opciones,
-        headers,
     });
 
     const resultado = await respuesta.json().catch(() => null);
@@ -24,42 +18,26 @@ async function solicitar(endpoint, opciones = {}) {
     return resultado?.data ?? resultado;
 }
 
-export async function crearPedidoApi({ usuarioId, entrega, direccion, telefono, items }) {
-    const payload = {
-        usuarioId: usuarioId ?? null,
-        tipoEntrega: entrega === "despacho" ? "DESPACHO" : "RETIRO",
-        direccion: entrega === "despacho" ? direccion : null,
-        telefonoContacto: telefono,
-        items: items.map((item) => ({
-            codigoProducto: item.codigo ?? item.id,
-            cantidad: item.cantidad,
-        })),
-    };
+export async function obtenerProductos({ texto = "", categoria = "" } = {}) {
+    const parametros = new URLSearchParams();
+    if (texto.trim()) parametros.set("texto", texto.trim());
+    if (categoria && categoria !== "Todas") parametros.set("categoria", categoria);
 
-    return solicitar("/pedidos", {
-        method: "POST",
-        body: JSON.stringify(payload),
-    });
+    const query = parametros.toString();
+    return solicitar(`/productos${query ? `?${query}` : ""}`);
 }
 
-export async function obtenerPedidos() {
-    return solicitar("/pedidos");
+export async function obtenerProductoPorCodigo(codigo) {
+    return solicitar(`/productos/${encodeURIComponent(codigo)}`);
 }
 
-export async function obtenerPedidosCliente(usuarioId) {
-    return solicitar(`/pedidos/cliente/${encodeURIComponent(usuarioId)}`);
+export async function obtenerCategorias() {
+    return solicitar("/categorias");
 }
 
-const ETIQUETA_A_ENUM = {
-    "En preparación": "EN_PREPARACION",
-    "Despachado": "DESPACHADO",
-    "Entregado": "ENTREGADO",
-};
-
-export async function cambiarEstadoPedidoApi(id, etiquetaEstado) {
-    const estadoEnum = ETIQUETA_A_ENUM[etiquetaEstado] || etiquetaEstado;
-    return solicitar(`/pedidos/${encodeURIComponent(id)}/estado`, {
-        method: "PATCH",
-        body: JSON.stringify({ estado: estadoEnum }),
+export async function actualizarProducto(codigo, datos) {
+    return solicitar(`/productos/${encodeURIComponent(codigo)}`, {
+        method: "PUT",
+        body: JSON.stringify(datos),
     });
 }
