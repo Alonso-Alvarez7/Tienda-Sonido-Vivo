@@ -30,27 +30,32 @@ public class ProductoService {
     }
 
     // ==========================================
-    // LISTAR PRODUCTOS ACTIVOS
+    // LISTAR PRODUCTOS ACTIVOS (con filtros)
     // ==========================================
 
     @Transactional(readOnly = true)
-    public List<ProductoResponse> listarProductos() {
+    public List<ProductoResponse> listarProductos(String texto, String categoria) {
 
-        return productoRepository.findAll()
+        String textoNormalizado = texto == null ? "" : texto.trim();
+        String categoriaNormalizada =
+                (categoria == null || categoria.isBlank() || categoria.equalsIgnoreCase("Todas"))
+                        ? ""
+                        : categoria.trim();
+
+        return productoRepository.buscarActivos(textoNormalizado, categoriaNormalizada)
                 .stream()
-                .filter(Producto::isActivo)
                 .map(this::convertirAResponse)
                 .toList();
     }
 
     // ==========================================
-    // BUSCAR PRODUCTO POR ID
+    // BUSCAR PRODUCTO POR CÓDIGO
     // ==========================================
 
     @Transactional(readOnly = true)
-    public ProductoResponse obtenerProducto(Long id) {
+    public ProductoResponse obtenerProducto(String codigo) {
 
-        Producto producto = buscarPorId(id);
+        Producto producto = buscarPorCodigo(codigo);
 
         if (!producto.isActivo()) {
             throw new ResponseStatusException(
@@ -86,12 +91,12 @@ public class ProductoService {
     // ==========================================
 
     public ProductoResponse actualizarProducto(
-            Long id,
+            String codigo,
             ProductoRequest request) {
 
-        Producto producto = buscarPorId(id);
+        Producto producto = buscarPorCodigo(codigo);
 
-        validarCodigoDisponible(request.codigo(), id);
+        validarCodigoDisponible(request.codigo(), producto.getId());
 
         Categoria categoria = buscarCategoria(request.categoriaId());
 
@@ -106,9 +111,9 @@ public class ProductoService {
     // DESACTIVAR PRODUCTO (BAJA LÓGICA)
     // ==========================================
 
-    public void desactivarProducto(Long id) {
+    public void desactivarProducto(String codigo) {
 
-        Producto producto = buscarPorId(id);
+        Producto producto = buscarPorCodigo(codigo);
 
         producto.setActivo(false);
 
@@ -119,12 +124,12 @@ public class ProductoService {
     // MÉTODOS AUXILIARES
     // ==========================================
 
-    private Producto buscarPorId(Long id) {
+    private Producto buscarPorCodigo(String codigo) {
 
-        return productoRepository.findById(id)
+        return productoRepository.findByCodigo(codigo.trim())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "No se encontró el producto con ID: " + id));
+                        "No se encontró el producto con código: " + codigo));
     }
 
     private Categoria buscarCategoria(Long categoriaId) {
@@ -169,7 +174,7 @@ public class ProductoService {
     private ProductoResponse convertirAResponse(Producto producto) {
 
         return new ProductoResponse(
-                producto.getId(),
+                producto.getCodigo(),
                 producto.getCodigo(),
                 producto.getNombre(),
                 producto.getMarca(),
