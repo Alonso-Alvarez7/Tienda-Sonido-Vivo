@@ -5,11 +5,13 @@ import {
     actualizarProducto,
 } from "../services/productosService.js";
 import {
+    obtenerPedidos,
+    cambiarEstadoPedidoApi,
+} from "../services/pedidosService.js";
+import {
     ESTADOS_PEDIDO,
     CLASE_ESTADO,
     codigoPedido,
-    listarPedidos,
-    cambiarEstadoPedido,
 } from "../data/pedidos";
 
 const STOCK_BAJO = 2;
@@ -24,17 +26,55 @@ function formatoFecha(iso) {
 function Vendedor() {
     const { usuario } = useAuth();
     const [pestana, setPestana] = useState("pedidos");
-    const [pedidos, setPedidos] = useState(() => listarPedidos());
+
+    // Pedidos: vienen del backend
+    const [pedidos, setPedidos] = useState([]);
+    const [cargandoPedidos, setCargandoPedidos] = useState(true);
+    const [errorPedidos, setErrorPedidos] = useState("");
+    const [actualizandoPedido, setActualizandoPedido] = useState(null);
+    const [recargaPedidos, setRecargaPedidos] = useState(0);
     const [filtroEstado, setFiltroEstado] = useState("todos");
-    const [busqueda, setBusqueda] = useState("");
 
     // Stock: viene del backend (Producto.stock)
+    const [busqueda, setBusqueda] = useState("");
     const [productos, setProductos] = useState([]);
     const [cargandoStock, setCargandoStock] = useState(true);
     const [errorStock, setErrorStock] = useState("");
     const [actualizando, setActualizando] = useState(null); // código en proceso
     const [recarga, setRecarga] = useState(0);
 
+    // Cargar pedidos desde el backend
+    useEffect(() => {
+        let vigente = true;
+
+        async function cargarPedidos() {
+            setCargandoPedidos(true);
+            setErrorPedidos("");
+
+            try {
+                const datos = await obtenerPedidos();
+                if (vigente) {
+                    setPedidos(Array.isArray(datos) ? datos : []);
+                }
+            } catch (e) {
+                if (vigente) {
+                    setErrorPedidos(e.message || "No fue posible cargar los pedidos.");
+                }
+            } finally {
+                if (vigente) {
+                    setCargandoPedidos(false);
+                }
+            }
+        }
+
+        cargarPedidos();
+
+        return () => {
+            vigente = false;
+        };
+    }, [recargaPedidos]);
+
+    // Cargar stock desde el backend
     useEffect(() => {
         let vigente = true;
 
@@ -85,9 +125,20 @@ function Vendedor() {
         )
         : productos;
 
-    function cambiarEstado(id, estado) {
-        cambiarEstadoPedido(id, estado);
-        setPedidos(listarPedidos());
+    async function cambiarEstado(id, estado) {
+        setActualizandoPedido(id);
+        setErrorPedidos("");
+
+        try {
+            const actualizado = await cambiarEstadoPedidoApi(id, estado);
+            setPedidos((lista) =>
+                lista.map((pedido) => (pedido.id === id ? actualizado : pedido))
+            );
+        } catch (e) {
+            setErrorPedidos(e.message || "No fue posible actualizar el estado del pedido.");
+        } finally {
+            setActualizandoPedido(null);
+        }
     }
 
     async function cambiarStock(producto, diferencia) {
@@ -98,7 +149,7 @@ function Vendedor() {
         setErrorStock("");
 
         try {
-            // El PUT del backend exige el producto completo (ProductoRequest).
+            // El PUT del backend exige el producto completo (ProductoRequest)[cite: 1, 2].
             const actualizado = await actualizarProducto(producto.codigo, {
                 codigo: producto.codigo,
                 nombre: producto.nombre,
@@ -164,20 +215,26 @@ function Vendedor() {
                         </label>
                         <button
                             className="boton-secundario"
-                            onClick={() => setPedidos(listarPedidos())}
+                            onClick={() => setRecargaPedidos((n) => n + 1)}
                         >
                             Actualizar lista
                         </button>
                     </div>
 
-                    {pedidosFiltrados.length === 0 ? (
+                    {errorPedidos && (
+                        <p className="auth-error" role="alert">{errorPedidos}</p>
+                    )}
+
+                    {cargandoPedidos ? (
+                        <p role="status">Cargando pedidos...</p>
+                    ) : pedidosFiltrados.length === 0 ? (
                         <p>No hay pedidos para mostrar.</p>
                     ) : (
                         <div className="pedidos-lista">
                             {pedidosFiltrados.map((pedido) => (
                                 <article className="pedido-tarjeta" key={pedido.id}>
                                     <div className="pedido-cabecera">
-                                        <h2>{codigoPedido(pedido.id)}</h2>
+                                        <h2>{pedido.codigo ?? codigoPedido(pedido.id)}</h2>
                                         <span className={`pedido-estado ${CLASE_ESTADO[pedido.estado]}`}>
                                             {pedido.estado}
                                         </span>
@@ -186,9 +243,13 @@ function Vendedor() {
                                     <p className="pedido-fecha">{formatoFecha(pedido.fecha)}</p>
 
                                     <p>
-                                        <strong>{pedido.cliente.nombre}</strong>
+                                        <strong>
+                                            {pedido.usuarioId > 0
+                                                ? `Cliente ID #${pedido.usuarioId}`
+                                                : "Cliente invitado"}
+                                        </strong>
                                         <br />
-                                        {pedido.cliente.correo} · {pedido.cliente.telefono}
+                                        Tel: {pedido.telefonoContacto}
                                     </p>
 
                                     <p>
@@ -213,6 +274,7 @@ function Vendedor() {
                                         Cambiar estado
                                         <select
                                             value={pedido.estado}
+                                            disabled={actualizandoPedido === pedido.id}
                                             onChange={(e) => cambiarEstado(pedido.id, e.target.value)}
                                         >
                                             {ESTADOS_PEDIDO.map((estado) => (
