@@ -1,6 +1,7 @@
-// Pedidos y stock (simulados con localStorage).
+// Pedidos (simulados con localStorage).
+// El stock ya no se maneja aquí: vive en el backend (Producto.stock) y se
+// consulta y ajusta desde services/productosService.js.
 // Cuando exista el microservicio Spring Boot (/api/pedidos), solo cambia el interior de estas funciones.
-import { productos } from "./productos";
 import { leer, guardar } from "../utils/almacenamiento";
 
 // Se re-exporta para que los demás archivos sigan importándola desde aquí.
@@ -15,7 +16,6 @@ export const CLASE_ESTADO = {
 };
 
 const CLAVE_PEDIDOS = "sonidoVivoPedidos";
-const CLAVE_STOCK = "sonidoVivoStock";
 
 /* ---------- Pedidos ---------- */
 
@@ -35,6 +35,8 @@ export function listarPedidosDeCliente(usuario) {
     );
 }
 
+// TODO (T-05): al integrar POST /api/pedidos, el backend validará el stock y lo
+// descontará de forma transaccional al confirmar el pedido.
 export function crearPedido({ cliente, entrega, direccion, items, usuarioId }) {
     const pedidos = leer(CLAVE_PEDIDOS, []);
 
@@ -52,12 +54,6 @@ export function crearPedido({ cliente, entrega, direccion, items, usuarioId }) {
 
     guardar(CLAVE_PEDIDOS, [...pedidos, nuevo]);
 
-    // El stock se actualiza automáticamente al registrar la venta.
-    const stockActual = obtenerStockActual();
-    items.forEach((item) => {
-        fijarStock(item.id, (stockActual[item.id] ?? 0) - item.cantidad);
-    });
-
     return nuevo;
 }
 
@@ -68,20 +64,4 @@ export function cambiarEstadoPedido(id, estado) {
         CLAVE_PEDIDOS,
         pedidos.map((pedido) => (pedido.id === id ? { ...pedido, estado } : pedido))
     );
-}
-
-/* ---------- Stock ---------- */
-
-// Stock base de productos.js + los ajustes guardados (descuentos por venta y cambios del vendedor).
-export function obtenerStockActual() {
-    const ajustes = leer(CLAVE_STOCK, {});
-    return Object.fromEntries(
-        productos.map((producto) => [producto.id, ajustes[producto.id] ?? producto.stock])
-    );
-}
-
-export function fijarStock(id, cantidad) {
-    const ajustes = leer(CLAVE_STOCK, {});
-    ajustes[id] = Math.max(0, cantidad);
-    guardar(CLAVE_STOCK, ajustes);
 }
