@@ -149,7 +149,7 @@ function Vendedor() {
         setErrorStock("");
 
         try {
-            // El PUT del backend exige el producto completo (ProductoRequest)[cite: 1, 2].
+            // El PUT del backend exige el producto completo (ProductoRequest).
             const actualizado = await actualizarProducto(producto.codigo, {
                 codigo: producto.codigo,
                 nombre: producto.nombre,

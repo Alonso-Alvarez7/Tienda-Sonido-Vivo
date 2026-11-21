@@ -3,7 +3,6 @@ import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 
 import LayoutPrincipal from "./layouts/LayoutPrincipal.jsx";
 import RutaProtegida from "./components/RutaProtegida.jsx";
-import RegistroPedido from "./components/RegistroPedido.jsx";
 import Inicio from "./pages/Inicio.jsx";
 
 import { obtenerProductoPorCodigo } from "./services/productosService";
