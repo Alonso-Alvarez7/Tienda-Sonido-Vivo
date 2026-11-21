@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.js";
-import { CLASE_ESTADO, codigoPedido, listarPedidosDeCliente } from "../data/pedidos";
+import { CLASE_ESTADO, codigoPedido } from "../data/pedidos";
+import { obtenerPedidosCliente } from "../services/pedidosService.js";
 
 function formatoFecha(iso) {
     return new Date(iso).toLocaleString("es-CL", {
@@ -11,13 +13,39 @@ function formatoFecha(iso) {
 
 function MisPedidos() {
     const { usuario } = useAuth();
-    const pedidos = listarPedidosDeCliente(usuario);
+    const [pedidos, setPedidos] = useState([]);
+    const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        if (!usuario?.id) return;
+        let vigente = true;
+
+        async function cargar() {
+            setCargando(true);
+            setError("");
+            try {
+                const datos = await obtenerPedidosCliente(usuario.id);
+                if (vigente) setPedidos(Array.isArray(datos) ? datos : []);
+            } catch (e) {
+                if (vigente) setError(e.message || "No se pudieron cargar tus pedidos.");
+            } finally {
+                if (vigente) setCargando(false);
+            }
+        }
+
+        cargar();
+        return () => { vigente = false; };
+    }, [usuario?.id]);
 
     return (
         <main className="mis-pedidos">
             <h1>Mis pedidos</h1>
 
-            {pedidos.length === 0 ? (
+            {cargando && <p role="status">Cargando pedidos...</p>}
+            {error && <p className="auth-error" role="alert">{error}</p>}
+
+            {!cargando && !error && pedidos.length === 0 ? (
                 <p>
                     Aún no tienes pedidos. <Link to="/#catalogo">Ver productos</Link>
                 </p>
@@ -26,7 +54,7 @@ function MisPedidos() {
                     {pedidos.map((pedido) => (
                         <article className="pedido-tarjeta" key={pedido.id}>
                             <div className="pedido-cabecera">
-                                <h2>{codigoPedido(pedido.id)}</h2>
+                                <h2>{pedido.codigo ?? codigoPedido(pedido.id)}</h2>
                                 <span className={`pedido-estado ${CLASE_ESTADO[pedido.estado]}`}>
                                     {pedido.estado}
                                 </span>

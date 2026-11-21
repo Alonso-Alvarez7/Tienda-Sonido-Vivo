@@ -1,26 +1,50 @@
 import { useState } from "react";
+import { useAuth } from "../auth/AuthContext.js";
+import { crearPedidoApi } from "../services/pedidosService.js";
 
 function Checkout({ carrito, onVolver, onConfirmar }) {
+    const { usuario } = useAuth();
     const [tipoEntrega, setTipoEntrega] = useState("retiro");
-    const [pedidoConfirmado, setPedidoConfirmado] = useState(false);
+    const [pedidoConfirmado, setPedidoConfirmado] = useState(null);
+    const [enviando, setEnviando] = useState(false);
+    const [error, setError] = useState("");
 
     const total = carrito.reduce(
         (suma, producto) => suma + producto.precio * producto.cantidad,
         0
     );
 
-    function confirmarPedido(evento) {
+    async function confirmarPedido(evento) {
         evento.preventDefault();
-        onConfirmar();
-        setPedidoConfirmado(true);
+        setError("");
+        setEnviando(true);
+
+        const datos = new FormData(evento.target);
+
+        try {
+            const creado = await crearPedidoApi({
+                usuarioId: usuario?.id ?? null,
+                entrega: datos.get("entrega") ?? "retiro",
+                direccion: datos.get("direccion") ?? "",
+                telefono: datos.get("telefono") ?? "",
+                items: carrito,
+            });
+
+            setPedidoConfirmado(creado);
+            onConfirmar();
+        } catch (e) {
+            setError(e.message || "No se pudo registrar el pedido.");
+        } finally {
+            setEnviando(false);
+        }
     }
 
     if (pedidoConfirmado) {
         return (
             <main className="checkout">
                 <h1>¡Pedido confirmado!</h1>
+                <p>Código de seguimiento: <strong>{pedidoConfirmado.codigo}</strong></p>
                 <p>Gracias por comprar en Sonido Vivo.</p>
-                <p>Tu pedido quedó registrado en esta demostración.</p>
                 <button onClick={onVolver}>Volver a la tienda</button>
             </main>
         );
@@ -33,6 +57,8 @@ function Checkout({ carrito, onVolver, onConfirmar }) {
             </button>
 
             <h1>Confirmar pedido</h1>
+
+            {error && <p className="auth-error" role="alert">{error}</p>}
 
             <section className="checkout-resumen">
                 <h2>Resumen de compra</h2>
@@ -50,12 +76,22 @@ function Checkout({ carrito, onVolver, onConfirmar }) {
 
                 <label>
                     Nombre completo
-                    <input name="nombre" type="text" required />
+                    <input
+                        name="nombre"
+                        type="text"
+                        defaultValue={usuario?.nombre ?? ""}
+                        required
+                    />
                 </label>
 
                 <label>
                     Correo electrónico
-                    <input name="correo" type="email" required />
+                    <input
+                        name="correo"
+                        type="email"
+                        defaultValue={usuario?.correo ?? ""}
+                        required
+                    />
                 </label>
 
                 <label>
@@ -96,8 +132,8 @@ function Checkout({ carrito, onVolver, onConfirmar }) {
                     </label>
                 )}
 
-                <button type="submit" disabled={carrito.length === 0}>
-                    Confirmar pedido
+                <button type="submit" disabled={carrito.length === 0 || enviando}>
+                    {enviando ? "Procesando pedido..." : "Confirmar pedido"}
                 </button>
             </form>
         </main>
