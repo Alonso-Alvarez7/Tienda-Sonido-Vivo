@@ -1564,3 +1564,43 @@ button {
     min-width: 0;
   }
 }
+
+
+/* =========================================================
+   PRODUCTOS DESTACADOS EN INICIO
+   ========================================================= */
+
+.inicio-destacados {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+}
+
+.inicio-destacados-encabezado {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.inicio-destacados-encabezado h2 {
+  margin: 8px 0;
+  font-size: 32px;
+}
+
+.inicio-destacados-encabezado > p:last-child {
+  color: #555;
+}
+
+.inicio-destacados-accion {
+  margin-top: 32px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .inicio-destacados {
+    padding: 32px 16px 44px;
+  }
+
+  .inicio-destacados-encabezado h2 {
+    font-size: 26px;
+  }
+}
