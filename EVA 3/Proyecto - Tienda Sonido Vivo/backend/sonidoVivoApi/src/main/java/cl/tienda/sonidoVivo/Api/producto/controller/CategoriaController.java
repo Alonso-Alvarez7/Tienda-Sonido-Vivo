@@ -3,8 +3,11 @@ package cl.tienda.sonidoVivo.Api.producto.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import cl.tienda.sonidoVivo.Api.common.ApiResponse;
 import cl.tienda.sonidoVivo.Api.producto.dto.CategoriaResponse;
 import cl.tienda.sonidoVivo.Api.producto.service.CategoriaService;
 
@@ -19,7 +22,7 @@ public class CategoriaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoriaResponse>> listarCategorias() {
-        return ResponseEntity.ok(categoriaService.listarCategorias());
+    public ResponseEntity<ApiResponse<List<CategoriaResponse>>> listarCategorias() {
+        return ResponseEntity.ok(ApiResponse.exito(categoriaService.listarCategorias()));
     }
 }
