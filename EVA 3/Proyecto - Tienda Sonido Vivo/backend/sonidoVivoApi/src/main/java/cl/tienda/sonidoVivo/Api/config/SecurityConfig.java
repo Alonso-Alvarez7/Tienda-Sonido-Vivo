@@ -16,7 +16,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 /**
  * Configuración de seguridad TEMPORAL.
  * Permite todas las peticiones mientras se construyen los módulos de negocio.
- * Será reemplazada por la configuración con JWT y roles (módulo de autenticación).
+ * Será reemplazada por la configuración con JWT y roles (módulo de
+ * autenticación).
  */
 @Configuration
 public class SecurityConfig {
@@ -24,11 +25,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors(Customizer.withDefaults())
-            .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(sesion ->
-                sesion.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(rutas -> rutas.anyRequest().permitAll());
+                .cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(sesion -> sesion.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(rutas -> rutas.anyRequest().permitAll());
 
         return http.build();
     }
@@ -37,7 +37,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "http://127.0.0.1:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
 
