@@ -1,29 +1,70 @@
-import { useState } from "react";
-import { productos } from "../data/productos";
+
+import { useEffect, useState } from "react";
 import ProductoCard from "../components/ProductoCard";
+import {
+    obtenerProductos,
+    obtenerCategorias,
+} from "../services/productosService";
 
 function Productos({ onAgregar, onVerDetalle }) {
     const [busqueda, setBusqueda] = useState("");
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas");
 
-    const categorias = [
-        "Todas",
-        ...new Set(productos.map((producto) => producto.categoria)),
-    ];
+    const [productos, setProductos] = useState([]);
+    const [categorias, setCategorias] = useState([]);
 
-    const productosFiltrados = productos.filter((producto) => {
-        const textoBusqueda = busqueda.toLowerCase();
+    const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState("");
 
-        const coincideBusqueda =
-            producto.nombre.toLowerCase().includes(textoBusqueda) ||
-            producto.marca.toLowerCase().includes(textoBusqueda);
+    // Cargar categorías desde el backend
+    useEffect(() => {
+        async function cargarCategorias() {
+            try {
+                const datos = await obtenerCategorias();
+                setCategorias(datos.map((categoria) => categoria.nombre));
+            } catch (e) {
+                setError(e.message);
+            }
+        }
 
-        const coincideCategoria =
-            categoriaSeleccionada === "Todas" ||
-            producto.categoria === categoriaSeleccionada;
+        cargarCategorias();
+    }, []);
 
-        return coincideBusqueda && coincideCategoria;
-    });
+    // Consultar productos cuando cambien los filtros
+    useEffect(() => {
+        let vigente = true;
+
+        async function cargarProductos() {
+            setCargando(true);
+            setError("");
+
+            try {
+                const datos = await obtenerProductos({
+                    texto: busqueda,
+                    categoria: categoriaSeleccionada,
+                });
+
+                if (vigente) {
+                    setProductos(datos);
+                }
+            } catch (e) {
+                if (vigente) {
+                    setError(e.message);
+                    setProductos([]);
+                }
+            } finally {
+                if (vigente) {
+                    setCargando(false);
+                }
+            }
+        }
+
+        cargarProductos();
+
+        return () => {
+            vigente = false;
+        };
+    }, [busqueda, categoriaSeleccionada]);
 
     return (
         <main className="pagina-productos" id="catalogo">
@@ -49,6 +90,8 @@ function Productos({ onAgregar, onVerDetalle }) {
                             setCategoriaSeleccionada(evento.target.value)
                         }
                     >
+                        <option value="Todas">Todas</option>
+
                         {categorias.map((categoria) => (
                             <option key={categoria} value={categoria}>
                                 {categoria}
@@ -59,10 +102,14 @@ function Productos({ onAgregar, onVerDetalle }) {
             </section>
 
             <section className="productos-grid">
-                {productosFiltrados.length > 0 ? (
-                    productosFiltrados.map((producto) => (
+                {cargando ? (
+                    <p>Cargando productos...</p>
+                ) : error ? (
+                    <p role="alert">Error al cargar productos: {error}</p>
+                ) : productos.length > 0 ? (
+                    productos.map((producto) => (
                         <ProductoCard
-                            key={producto.id}
+                            key={producto.codigo}
                             producto={producto}
                             onAgregar={onAgregar}
                             onVerDetalle={onVerDetalle}
