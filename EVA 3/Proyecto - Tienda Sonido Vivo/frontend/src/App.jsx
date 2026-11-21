@@ -206,13 +206,11 @@ function App() {
         <Route
           path="checkout"
           element={
-            <RegistroPedido carrito={carrito}>
-              <Checkout
-                carrito={carrito}
-                onVolver={() => navegar("/carrito")}
-                onConfirmar={() => setCarrito([])}
-              />
-            </RegistroPedido>
+            <Checkout
+              carrito={carrito}
+              onVolver={() => navegar("/carrito")}
+              onConfirmar={() => setCarrito([])}
+            />
           }
         />
 
