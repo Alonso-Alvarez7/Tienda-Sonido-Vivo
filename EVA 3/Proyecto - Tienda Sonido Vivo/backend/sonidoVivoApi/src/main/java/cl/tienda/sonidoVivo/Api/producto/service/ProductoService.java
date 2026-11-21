@@ -37,10 +37,9 @@ public class ProductoService {
     public List<ProductoResponse> listarProductos(String texto, String categoria) {
 
         String textoNormalizado = texto == null ? "" : texto.trim();
-        String categoriaNormalizada =
-                (categoria == null || categoria.isBlank() || categoria.equalsIgnoreCase("Todas"))
-                        ? ""
-                        : categoria.trim();
+        String categoriaNormalizada = (categoria == null || categoria.isBlank() || categoria.equalsIgnoreCase("Todas"))
+                ? ""
+                : categoria.trim();
 
         return productoRepository.buscarActivos(textoNormalizado, categoriaNormalizada)
                 .stream()
@@ -121,6 +120,19 @@ public class ProductoService {
     }
 
     // ==========================================
+    // REACTIVAR PRODUCTO
+    // ==========================================
+
+    public void activarProducto(String codigo) {
+
+        Producto producto = buscarPorCodigo(codigo);
+
+        producto.setActivo(true);
+
+        productoRepository.save(producto);
+    }
+    
+    // ==========================================
     // MÉTODOS AUXILIARES
     // ==========================================
 
@@ -185,7 +197,6 @@ public class ProductoService {
                 producto.getImagen(),
                 producto.getCategoria().getId(),
                 producto.getCategoria().getNombre(),
-                producto.isActivo()
-        );
+                producto.isActivo());
     }
 }

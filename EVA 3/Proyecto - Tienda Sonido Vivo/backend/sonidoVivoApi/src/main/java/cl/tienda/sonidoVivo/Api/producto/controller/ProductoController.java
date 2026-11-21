@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 import cl.tienda.sonidoVivo.Api.common.ApiResponse;
 import cl.tienda.sonidoVivo.Api.producto.dto.ProductoRequest;
@@ -31,7 +32,8 @@ public class ProductoController {
         this.productoService = productoService;
     }
 
-    // Listar productos activos. Filtros opcionales: ?texto=yamaha&categoria=Baterías
+    // Listar productos activos. Filtros opcionales:
+    // ?texto=yamaha&categoria=Baterías
     @GetMapping
     public ResponseEntity<ApiResponse<List<ProductoResponse>>> listarProductos(
             @RequestParam(required = false) String texto,
@@ -81,5 +83,16 @@ public class ProductoController {
         productoService.desactivarProducto(codigo);
 
         return ResponseEntity.ok(ApiResponse.exito(null, "Producto desactivado correctamente"));
+    }
+
+    // Reactivar un producto
+    @PatchMapping("/{codigo}/activar")
+    public ResponseEntity<ApiResponse<Void>> activarProducto(
+            @PathVariable String codigo) {
+
+        productoService.activarProducto(codigo);
+
+        return ResponseEntity.ok(
+                ApiResponse.exito(null, "Producto activado correctamente"));
     }
 }

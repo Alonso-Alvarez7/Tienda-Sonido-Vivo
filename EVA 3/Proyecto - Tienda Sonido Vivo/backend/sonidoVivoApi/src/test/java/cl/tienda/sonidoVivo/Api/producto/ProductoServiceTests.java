@@ -82,4 +82,22 @@ class ProductoServiceTests {
                 () -> productoService.obtenerProducto("TT005"));
         assertEquals(404, error.getStatusCode().value());
     }
+
+    @Test
+    void reactivarProductoLoDevuelveAlCatalogo() {
+
+        productoService.crearProducto(
+                request("TT006", "Guitarra Reactivable", "Yamaha"));
+
+        productoService.desactivarProducto("TT006");
+
+        productoService.activarProducto("TT006");
+
+        assertEquals(
+                1,
+                productoService.listarProductos("Guitarra Reactivable", "").size());
+
+        assertTrue(
+                productoService.obtenerProducto("TT006").activo());
+    }
 }
