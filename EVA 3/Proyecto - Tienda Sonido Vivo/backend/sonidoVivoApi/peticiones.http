@@ -84,3 +84,9 @@ DELETE {{url}}/productos/ZZ001
 
 ### Ruta inexistente (404 en formato ApiResponse)
 GET {{url}}/no-existe
+
+### Reactivar producto
+PATCH {{url}}/productos/GA001/activar
+
+### Comprobar que volvió al catálogo
+GET {{url}}/productos/GA001
