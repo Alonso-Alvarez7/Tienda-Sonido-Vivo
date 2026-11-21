@@ -1,0 +1,86 @@
+@url = http://localhost:8080/api
+
+### Listar productos activos
+GET {{url}}/productos
+
+### Filtrar por texto (nombre o marca)
+GET {{url}}/productos?texto=yamaha
+
+### Filtrar por categoría
+GET {{url}}/productos?categoria=Baterías
+
+### Filtrar por texto y categoría
+GET {{url}}/productos?texto=pearl&categoria=Baterías
+
+### Detalle por código
+GET {{url}}/productos/GA001
+
+### Detalle de un código inexistente (404)
+GET {{url}}/productos/XX999
+
+### Listar categorías
+GET {{url}}/categorias
+
+### Crear producto (201)
+POST {{url}}/productos
+Content-Type: application/json
+
+{
+  "codigo": "ZZ001",
+  "nombre": "Guitarra de prueba",
+  "marca": "Yamaha",
+  "modelo": "T1",
+  "descripcion": "Producto creado desde peticiones.http",
+  "precio": 99990,
+  "stock": 5,
+  "imagen": "/imagen/productos/ZZ001.jpg",
+  "categoriaId": 1
+}
+
+### Crear con código repetido (409)
+POST {{url}}/productos
+Content-Type: application/json
+
+{
+  "codigo": "GA001",
+  "nombre": "Repetido",
+  "marca": "Yamaha",
+  "precio": 1000,
+  "stock": 1,
+  "categoriaId": 1
+}
+
+### Crear con datos inválidos (400, mensajes de validación)
+POST {{url}}/productos
+Content-Type: application/json
+
+{
+  "codigo": "",
+  "nombre": "",
+  "marca": "",
+  "precio": -5,
+  "stock": -1,
+  "categoriaId": 1
+}
+
+### Actualizar producto
+PUT {{url}}/productos/ZZ001
+Content-Type: application/json
+
+{
+  "codigo": "ZZ001",
+  "nombre": "Guitarra de prueba editada",
+  "marca": "Yamaha",
+  "modelo": "T2",
+  "descripcion": "Editada",
+  "precio": 109990,
+  "stock": 7,
+  "imagen": "/imagen/productos/ZZ001.jpg",
+  "categoriaId": 1
+}
+
+### Desactivar producto (baja lógica)
+DELETE {{url}}/productos/ZZ001
+
+### Ruta inexistente (404 en formato ApiResponse)
+GET {{url}}/no-existe
