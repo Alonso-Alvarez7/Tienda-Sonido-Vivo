@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import cl.tienda.sonidoVivo.Api.common.ApiResponse;
 import cl.tienda.sonidoVivo.Api.producto.dto.ProductoRequest;
 import cl.tienda.sonidoVivo.Api.producto.dto.ProductoResponse;
 import cl.tienda.sonidoVivo.Api.producto.service.ProductoService;
@@ -29,49 +31,55 @@ public class ProductoController {
         this.productoService = productoService;
     }
 
-    // Listar todos los productos activos
+    // Listar productos activos. Filtros opcionales: ?texto=yamaha&categoria=Baterías
     @GetMapping
-    public ResponseEntity<List<ProductoResponse>> listarProductos() {
-        return ResponseEntity.ok(productoService.listarProductos());
+    public ResponseEntity<ApiResponse<List<ProductoResponse>>> listarProductos(
+            @RequestParam(required = false) String texto,
+            @RequestParam(required = false) String categoria) {
+
+        return ResponseEntity.ok(
+                ApiResponse.exito(productoService.listarProductos(texto, categoria)));
     }
 
-    // Obtener un producto por su ID
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductoResponse> obtenerProducto(
-            @PathVariable Long id) {
+    // Obtener un producto por su código (GA001, ...)
+    @GetMapping("/{codigo}")
+    public ResponseEntity<ApiResponse<ProductoResponse>> obtenerProducto(
+            @PathVariable String codigo) {
 
-        return ResponseEntity.ok(productoService.obtenerProducto(id));
+        return ResponseEntity.ok(
+                ApiResponse.exito(productoService.obtenerProducto(codigo)));
     }
 
     // Crear un producto
     @PostMapping
-    public ResponseEntity<ProductoResponse> crearProducto(
+    public ResponseEntity<ApiResponse<ProductoResponse>> crearProducto(
             @Valid @RequestBody ProductoRequest request) {
 
-        ProductoResponse productoCreado =
-                productoService.crearProducto(request);
+        ProductoResponse productoCreado = productoService.crearProducto(request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productoCreado);
+                .body(ApiResponse.exito(productoCreado, "Producto creado correctamente"));
     }
 
     // Actualizar un producto
-    @PutMapping("/{id}")
-    public ResponseEntity<ProductoResponse> actualizarProducto(
-            @PathVariable Long id,
+    @PutMapping("/{codigo}")
+    public ResponseEntity<ApiResponse<ProductoResponse>> actualizarProducto(
+            @PathVariable String codigo,
             @Valid @RequestBody ProductoRequest request) {
 
         return ResponseEntity.ok(
-                productoService.actualizarProducto(id, request));
+                ApiResponse.exito(
+                        productoService.actualizarProducto(codigo, request),
+                        "Producto actualizado correctamente"));
     }
 
     // Desactivar un producto (baja lógica), no lo elimina
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> desactivarProducto(
-            @PathVariable Long id) {
+    @DeleteMapping("/{codigo}")
+    public ResponseEntity<ApiResponse<Void>> desactivarProducto(
+            @PathVariable String codigo) {
 
-        productoService.desactivarProducto(id);
+        productoService.desactivarProducto(codigo);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.exito(null, "Producto desactivado correctamente"));
     }
 }

@@ -1,8 +1,9 @@
 package cl.tienda.sonidoVivo.Api.producto.dto;
 
+/** El id expuesto es el código del producto (GA001, ...) para no cambiar el frontend. */
 public record ProductoResponse(
 
-    Long id,
+    String id,
     String codigo,
     String nombre,
     String marca,
