@@ -3,8 +3,9 @@ import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 
 import LayoutPrincipal from "./layouts/LayoutPrincipal.jsx";
 import RutaProtegida from "./components/RutaProtegida.jsx";
-import RegistroPedido from "./components/RegistroPedido.jsx";
 import Inicio from "./pages/Inicio.jsx";
+
+import { obtenerProductoPorCodigo } from "./services/productosService";
 import Productos from "./pages/Productos.jsx";
 import DetalleProducto from "./pages/DetalleProducto.jsx";
 import Carrito from "./pages/Carrito.jsx";
@@ -15,22 +16,66 @@ import Admin from "./pages/Admin.jsx";
 import Vendedor from "./pages/Vendedor.jsx";
 import MisPedidos from "./pages/MisPedidos.jsx";
 import NoAutorizado from "./pages/NoAutorizado.jsx";
-import { productos } from "./data/productos";
+
+
 import { ROLES } from "./auth/auth";
 import Contacto from "./pages/Contacto.jsx";
 import Nosotros from "./pages/Nosotros.jsx";
 import Blog from "./pages/Blog.jsx";
 
+
 function PaginaDetalle({ onAgregar }) {
   const { id } = useParams();
   const navegar = useNavigate();
-  const producto = productos.find((item) => item.id === id);
 
-  if (!producto) {
+  const [producto, setProducto] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let vigente = true;
+
+    async function cargarProducto() {
+      setCargando(true);
+      setError("");
+
+      try {
+        const datos = await obtenerProductoPorCodigo(id);
+
+        if (vigente) {
+          setProducto(datos);
+        }
+      } catch (e) {
+        if (vigente) {
+          setError(e.message);
+          setProducto(null);
+        }
+      } finally {
+        if (vigente) {
+          setCargando(false);
+        }
+      }
+    }
+
+    cargarProducto();
+
+    return () => {
+      vigente = false;
+    };
+  }, [id]);
+
+  if (cargando) {
+    return <main><p>Cargando producto...</p></main>;
+  }
+
+  if (error || !producto) {
     return (
       <main>
         <h1>Producto no encontrado</h1>
-        <button onClick={() => navegar("/")}>Volver a la tienda</button>
+        <p role="alert">{error || "No se encontró el producto solicitado."}</p>
+        <button onClick={() => navegar("/")}>
+          Volver a la tienda
+        </button>
       </main>
     );
   }
@@ -43,6 +88,7 @@ function PaginaDetalle({ onAgregar }) {
     />
   );
 }
+
 
 /**
  * Rutas protegidas por rol:
@@ -66,27 +112,34 @@ function App() {
     localStorage.setItem("sonidoVivoCarrito", JSON.stringify(carrito));
   }, [carrito]);
 
+
   function agregarAlCarrito(producto) {
+    const productoNormalizado = {
+      ...producto,
+      id: producto.id ?? producto.codigo,
+    };
+
     setCarrito((carritoActual) => {
       const productoEnCarrito = carritoActual.find(
-        (item) => item.id === producto.id,
+        (item) => item.id === productoNormalizado.id
       );
 
       if (productoEnCarrito) {
-        if (productoEnCarrito.cantidad >= producto.stock) {
+        if (productoEnCarrito.cantidad >= productoNormalizado.stock) {
           return carritoActual;
         }
 
         return carritoActual.map((item) =>
-          item.id === producto.id
+          item.id === productoNormalizado.id
             ? { ...item, cantidad: item.cantidad + 1 }
-            : item,
+            : item
         );
       }
 
-      return [...carritoActual, { ...producto, cantidad: 1 }];
+      return [...carritoActual, { ...productoNormalizado, cantidad: 1 }];
     });
   }
+
 
   function cambiarCantidad(id, nuevaCantidad) {
     setCarrito((carritoActual) =>
@@ -121,11 +174,11 @@ function App() {
           index
           element={
             <>
-              <Inicio />
+              <Inicio onAgregar={agregarAlCarrito} />
               <Productos
                 onAgregar={agregarAlCarrito}
                 onVerDetalle={(producto) =>
-                  navegar(`/productos/${producto.id}`)
+                  navegar(`/productos/${encodeURIComponent(producto.codigo ?? producto.id)}`)
                 }
               />
             </>
@@ -152,13 +205,11 @@ function App() {
         <Route
           path="checkout"
           element={
-            <RegistroPedido carrito={carrito}>
-              <Checkout
-                carrito={carrito}
-                onVolver={() => navegar("/carrito")}
-                onConfirmar={() => setCarrito([])}
-              />
-            </RegistroPedido>
+            <Checkout
+              carrito={carrito}
+              onVolver={() => navegar("/carrito")}
+              onConfirmar={() => setCarrito([])}
+            />
           }
         />
 

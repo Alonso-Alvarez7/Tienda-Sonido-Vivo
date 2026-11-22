@@ -2,18 +2,48 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import ProductoCard from "./ProductoCard";
 
+// Misma forma que ProductoResponse del backend (el id expuesto es el código).
 const producto = {
-    id: "guitarra-1",
+    id: "GA001",
+    codigo: "GA001",
     nombre: "Guitarra Acústica Folk",
-    categoria: "Guitarras Acústicas",
     marca: "Yamaha",
     modelo: "F310",
+    descripcion: "Tapa de abeto, aros y fondo de meranti.",
     precio: 129990,
     stock: 8,
-    imagen: "/imagenes/guitarra.jpg",
+    imagen: "/imagen/productos/GA001.jpg",
+    categoriaId: 1,
+    categoria: "Guitarras Acústicas",
+    activo: true,
 };
 
 describe("ProductoCard", () => {
+    it("muestra los datos del producto tal como los entrega la API", () => {
+        render(
+            <ProductoCard
+                producto={producto}
+                onAgregar={vi.fn()}
+                onVerDetalle={vi.fn()}
+            />
+        );
+
+        expect(screen.getByText("Guitarras Acústicas")).toBeInTheDocument();
+        expect(
+            screen.getByRole("heading", { name: producto.nombre })
+        ).toBeInTheDocument();
+        expect(screen.getByText("Yamaha")).toBeInTheDocument();
+        expect(screen.getByText("F310")).toBeInTheDocument();
+        expect(
+            screen.getByText(`$${producto.precio.toLocaleString("es-CL")} CLP`)
+        ).toBeInTheDocument();
+        expect(screen.getByText("Stock disponible: 8")).toBeInTheDocument();
+        expect(screen.getByRole("img")).toHaveAttribute(
+            "src",
+            "/imagen/productos/GA001.jpg"
+        );
+    });
+
     it("llama a la función para agregar el producto", () => {
         const onAgregar = vi.fn();
 

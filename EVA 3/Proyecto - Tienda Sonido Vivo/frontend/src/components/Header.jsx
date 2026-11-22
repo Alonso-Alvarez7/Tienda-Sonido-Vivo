@@ -2,24 +2,61 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import { useAuth } from "../auth/AuthContext.js";
-import { productos } from "../data/productos";
+import { obtenerProductos } from "../services/productosService.js";
+
+const RETARDO_BUSQUEDA_MS = 300;
+const MAX_SUGERENCIAS = 8;
 
 function Header({ cantidadEnCarrito }) {
     const [texto, setTexto] = useState("");
     const [resultadosAbiertos, setResultadosAbiertos] = useState(false);
+    // Última consulta terminada: { texto, items, error }
+    const [consulta, setConsulta] = useState({ texto: "", items: [], error: "" });
     const contenedorRef = useRef(null);
     const { usuario, logout } = useAuth();
     const navegar = useNavigate();
 
-    // Misma lógica de búsqueda que Productos.jsx: por nombre o marca
-    const textoBusqueda = texto.trim().toLowerCase();
-    const resultados = textoBusqueda
-        ? productos.filter(
-            (producto) =>
-                producto.nombre.toLowerCase().includes(textoBusqueda) ||
-                producto.marca.toLowerCase().includes(textoBusqueda)
-        )
-        : [];
+    const textoBusqueda = texto.trim();
+
+    // Consulta al backend (nombre o marca) con pequeña espera mientras se escribe
+    useEffect(() => {
+        if (!textoBusqueda) return;
+
+        let vigente = true;
+
+        const temporizador = setTimeout(async () => {
+            try {
+                const datos = await obtenerProductos({ texto: textoBusqueda });
+
+                if (vigente) {
+                    setConsulta({
+                        texto: textoBusqueda,
+                        items: Array.isArray(datos) ? datos : [],
+                        error: "",
+                    });
+                }
+            } catch (e) {
+                if (vigente) {
+                    setConsulta({
+                        texto: textoBusqueda,
+                        items: [],
+                        error: e.message || "No fue posible buscar productos.",
+                    });
+                }
+            }
+        }, RETARDO_BUSQUEDA_MS);
+
+        return () => {
+            vigente = false;
+            clearTimeout(temporizador);
+        };
+    }, [textoBusqueda]);
+
+    // Solo se usan resultados que correspondan al texto actual
+    const consultaActual = consulta.texto === textoBusqueda;
+    const buscando = Boolean(textoBusqueda) && !consultaActual;
+    const resultados = consultaActual ? consulta.items.slice(0, MAX_SUGERENCIAS) : [];
+    const errorBusqueda = consultaActual ? consulta.error : "";
 
     // Cierra la lista al hacer clic fuera del buscador
     useEffect(() => {
@@ -36,6 +73,10 @@ function Header({ cantidadEnCarrito }) {
         return () => document.removeEventListener("mousedown", cerrarSiClicFuera);
     }, []);
 
+    function rutaProducto(producto) {
+        return `/productos/${encodeURIComponent(producto.codigo ?? producto.id)}`;
+    }
+
     function limpiarBusqueda() {
         setTexto("");
         setResultadosAbiertos(false);
@@ -44,8 +85,10 @@ function Header({ cantidadEnCarrito }) {
     function buscar(evento) {
         evento.preventDefault();
 
+        if (!textoBusqueda) return;
+
         if (resultados.length > 0) {
-            navegar(`/productos/${resultados[0].id}`);
+            navegar(rutaProducto(resultados[0]));
             limpiarBusqueda();
         } else {
             setResultadosAbiertos(true);
@@ -89,11 +132,19 @@ function Header({ cantidadEnCarrito }) {
 
                 {resultadosAbiertos && textoBusqueda && (
                     <ul className="buscador-resultados">
-                        {resultados.length > 0 ? (
+                        {buscando ? (
+                            <li className="buscador-sin-resultados" role="status">
+                                Buscando...
+                            </li>
+                        ) : errorBusqueda ? (
+                            <li className="buscador-sin-resultados" role="alert">
+                                No fue posible buscar: {errorBusqueda}
+                            </li>
+                        ) : resultados.length > 0 ? (
                             resultados.map((producto) => (
-                                <li key={producto.id}>
+                                <li key={producto.codigo ?? producto.id}>
                                     <Link
-                                        to={`/productos/${producto.id}`}
+                                        to={rutaProducto(producto)}
                                         onClick={limpiarBusqueda}
                                     >
                                         <span>{producto.nombre}</span>
