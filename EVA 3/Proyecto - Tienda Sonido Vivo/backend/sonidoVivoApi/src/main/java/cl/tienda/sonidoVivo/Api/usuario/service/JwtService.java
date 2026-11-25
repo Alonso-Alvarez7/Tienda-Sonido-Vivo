@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtService.class);
     private static final long DURACION_MS = 8 * 60 * 60 * 1000L;
 
     private final SecretKey claveFirma;
@@ -47,6 +50,7 @@ public class JwtService {
             obtenerClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
+            log.warn("JWT rechazado: {}", e.getClass().getSimpleName());
             return false;
         }
     }
