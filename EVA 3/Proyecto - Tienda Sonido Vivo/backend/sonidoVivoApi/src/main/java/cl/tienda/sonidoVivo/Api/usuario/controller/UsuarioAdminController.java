@@ -19,8 +19,10 @@ import cl.tienda.sonidoVivo.Api.usuario.dto.CambiarRolRequest;
 import cl.tienda.sonidoVivo.Api.usuario.dto.CrearUsuarioRequest;
 import cl.tienda.sonidoVivo.Api.usuario.dto.UsuarioAdminResponse;
 import cl.tienda.sonidoVivo.Api.usuario.service.UsuarioAdminService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioAdminController {
