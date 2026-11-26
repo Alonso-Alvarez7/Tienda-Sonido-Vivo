@@ -1,12 +1,16 @@
+
 import { obtenerSesion } from "../auth/auth";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
 async function solicitar(endpoint, opciones = {}) {
     const sesion = obtenerSesion();
+
     const headers = {
         "Content-Type": "application/json",
-        ...(sesion?.token ? { Authorization: `Bearer ${sesion.token}` } : {}),
+        ...(sesion?.token
+            ? { Authorization: `Bearer ${sesion.token}` }
+            : {}),
         ...opciones.headers,
     };
 
@@ -18,20 +22,35 @@ async function solicitar(endpoint, opciones = {}) {
     const resultado = await respuesta.json().catch(() => null);
 
     if (!respuesta.ok) {
-        throw new Error(resultado?.mensaje || `Error HTTP ${respuesta.status}`);
+        throw new Error(
+            resultado?.mensaje ||
+            resultado?.message ||
+            `Error HTTP ${respuesta.status}`
+        );
     }
 
     return resultado?.data ?? resultado;
 }
 
-export async function crearPedidoApi({ usuarioId, entrega, direccion, telefono, items }) {
+/**
+ * Registra un pedido.
+ * El backend identifica al cliente mediante el JWT.
+ * No se envía usuarioId ni el total calculado por React.
+ */
+export async function crearPedidoApi({
+    entrega,
+    direccion,
+    telefono,
+    items,
+}) {
+    const esDespacho = String(entrega).toUpperCase() === "DESPACHO";
+
     const payload = {
-        usuarioId: usuarioId ?? null,
-        tipoEntrega: entrega === "despacho" ? "DESPACHO" : "RETIRO",
-        direccion: entrega === "despacho" ? direccion : null,
+        tipoEntrega: esDespacho ? "DESPACHO" : "RETIRO",
+        direccion: esDespacho ? direccion : null,
         telefonoContacto: telefono,
         items: items.map((item) => ({
-            codigoProducto: item.codigo ?? item.id,
+            codigoProducto: item.codigo ?? item.codigoProducto ?? item.id,
             cantidad: item.cantidad,
         })),
     };
@@ -42,12 +61,20 @@ export async function crearPedidoApi({ usuarioId, entrega, direccion, telefono, 
     });
 }
 
+/**
+ * Lista todos los pedidos.
+ * Disponible para vendedor y administrador.
+ */
 export async function obtenerPedidos() {
     return solicitar("/pedidos");
 }
 
-export async function obtenerPedidosCliente(usuarioId) {
-    return solicitar(`/pedidos/cliente/${encodeURIComponent(usuarioId)}`);
+/**
+ * Lista exclusivamente los pedidos del usuario autenticado.
+ * No recibe usuarioId porque el backend lo obtiene del JWT.
+ */
+export async function obtenerPedidosCliente() {
+    return solicitar("/pedidos/mis-pedidos");
 }
 
 const ETIQUETA_A_ENUM = {
@@ -56,10 +83,16 @@ const ETIQUETA_A_ENUM = {
     "Entregado": "ENTREGADO",
 };
 
+/**
+ * Actualiza el estado de un pedido.
+ */
 export async function cambiarEstadoPedidoApi(id, etiquetaEstado) {
     const estadoEnum = ETIQUETA_A_ENUM[etiquetaEstado] || etiquetaEstado;
+
     return solicitar(`/pedidos/${encodeURIComponent(id)}/estado`, {
         method: "PATCH",
-        body: JSON.stringify({ estado: estadoEnum }),
+        body: JSON.stringify({
+            estado: estadoEnum,
+        }),
     });
 }

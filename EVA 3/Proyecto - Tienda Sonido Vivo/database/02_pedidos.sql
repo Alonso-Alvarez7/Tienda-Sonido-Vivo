@@ -43,9 +43,9 @@ CREATE TABLE IF NOT EXISTS detalle_pedidos (
   CONSTRAINT ck_detalle_precio CHECK (precio_unitario > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- PENDIENTE (cuando Benjamín cree la tabla usuarios, T-08, con id BIGINT):
--- ALTER TABLE pedidos
---   ADD CONSTRAINT fk_pedidos_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios (id);
+-- La restricción FOREIGN KEY (fk_pedidos_usuario) hacia usuarios(id)
+-- se aplica en 03_usuarios.sql (y en BaseDatos_sonidoVivo.sql)
+-- una vez creada la tabla usuarios.
 
 -- Verificación
 DESCRIBE pedidos;

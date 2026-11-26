@@ -10,8 +10,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record PedidoRequest(
-    // Temporal hasta que Benjamín integre JWT (T-09). Si viene null (compra invitado), se usa 0L o el id enviado.
-    Long usuarioId,
 
     @NotNull(message = "El tipo de entrega es obligatorio")
     TipoEntrega tipoEntrega,
@@ -23,7 +21,8 @@ public record PedidoRequest(
     @Size(max = 20, message = "El teléfono no puede superar los 20 caracteres")
     String telefonoContacto,
 
-    @NotEmpty(message = "El pedido debe contener al menos un producto")
+        @NotEmpty(message = "El pedido debe contener al menos un producto")
     @Valid
     List<ItemPedidoRequest> items
+
 ) {}
