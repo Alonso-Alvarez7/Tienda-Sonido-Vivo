@@ -49,7 +49,8 @@ public class AdminInitializer implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
         if (correoAdmin.isBlank() || claveAdmin.isBlank()) {
-            log.info("Administrador inicial omitido: configura ADMIN_EMAIL y ADMIN_PASSWORD.");
+            log.info(
+                    "Administrador inicial omitido: configura ADMIN_EMAIL y ADMIN_PASSWORD.");
             return;
         }
 
@@ -62,7 +63,8 @@ public class AdminInitializer implements CommandLineRunner {
                 correoAdmin.trim().toLowerCase(Locale.ROOT);
 
         if (usuarioRepository.existsByCorreo(correoNormalizado)) {
-            log.info("El usuario administrador inicial ya existe; no se modificó.");
+            log.info(
+                    "El usuario administrador inicial ya existe; no se modificó.");
             return;
         }
 
