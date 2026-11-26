@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -44,6 +46,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiResponse<Void>> manejarTipoParametro(MethodArgumentTypeMismatchException ex) {
         return responder(HttpStatus.BAD_REQUEST, "El parámetro '" + ex.getName() + "' no es válido");
+    }
+
+    // 401: correo o clave incorrectos al iniciar sesión
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<Void>> manejarCredenciales(BadCredentialsException ex) {
+        return responder(HttpStatus.UNAUTHORIZED, "Correo o contraseña incorrectos");
+    }
+
+    // 403: cuenta desactivada por el administrador
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ApiResponse<Void>> manejarCuentaDesactivada(DisabledException ex) {
+        return responder(HttpStatus.FORBIDDEN, "La cuenta está desactivada");
     }
 
     // Errores de negocio lanzados con ResponseStatusException (404, 409, ...)
