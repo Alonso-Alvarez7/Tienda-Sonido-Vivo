@@ -1,4 +1,11 @@
-// Autenticación y administración de usuarios mediante el backend.
+
+import { hashearClave } from "../utils/seguridad";
+import { validarCorreo, validarClave } from "../utils/validaciones";
+import {
+    leerUsuarios,
+    guardarUsuarios,
+    sinClave,
+} from "../utils/almacenamientoUsuarios";
 
 export const ROLES = {
     ADMIN: "administrador",
@@ -6,9 +13,8 @@ export const ROLES = {
     CLIENTE: "cliente",
 };
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 const CLAVE_SESION = "sonidoVivoSesion";
-const DURACION_SESION_MS = 8 * 60 * 60 * 1000;
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
 async function solicitarAuth(endpoint, opciones = {}) {
     const respuesta = await fetch(`${API_URL}${endpoint}`, {
@@ -21,36 +27,15 @@ async function solicitarAuth(endpoint, opciones = {}) {
 
     const resultado = await respuesta.json().catch(() => null);
 
-    if (respuesta.status === 401 && endpoint !== "/auth/login") {
-        localStorage.removeItem(CLAVE_SESION);
-        window.dispatchEvent(new Event("sonidoVivoSesionInvalida"));
-    }
-    
-    if (!respuesta.ok || resultado?.ok === false) {
+    if (!respuesta.ok) {
         throw new Error(
-            resultado?.mensaje || `Error HTTP ${respuesta.status}`
+            resultado?.mensaje ||
+            resultado?.message ||
+            `Error HTTP ${respuesta.status}`
         );
     }
 
-    return resultado;
-}
-
-async function solicitarAdmin(endpoint, opciones = {}) {
-    const sesion = obtenerSesion();
-
-    if (!sesion?.token) {
-        throw new Error("Inicia sesión nuevamente para administrar usuarios.");
-    }
-
-    const resultado = await solicitarAuth(endpoint, {
-        ...opciones,
-        headers: {
-            Authorization: `Bearer ${sesion.token}`,
-            ...opciones.headers,
-        },
-    });
-
-    return resultado?.data;
+    return resultado?.data ?? resultado;
 }
 
 /* ---------- Sesión ---------- */
@@ -59,11 +44,7 @@ export function obtenerSesion() {
     try {
         const sesion = JSON.parse(localStorage.getItem(CLAVE_SESION));
 
-        if (
-            !sesion?.token ||
-            !sesion?.expira ||
-            Number(sesion.expira) <= Date.now()
-        ) {
+        if (!sesion || !sesion.token || sesion.expira <= Date.now()) {
             localStorage.removeItem(CLAVE_SESION);
             return null;
         }
@@ -75,8 +56,11 @@ export function obtenerSesion() {
     }
 }
 
+/**
+ * Inicio de sesión conectado al backend Spring Boot.
+ */
 export async function iniciarSesion(correo, clave) {
-    const resultado = await solicitarAuth("/auth/login", {
+    const respuesta = await solicitarAuth("/auth/login", {
         method: "POST",
         body: JSON.stringify({
             correo: correo.trim().toLowerCase(),
@@ -84,18 +68,21 @@ export async function iniciarSesion(correo, clave) {
         }),
     });
 
-    const datos = resultado?.data;
-
-    if (!datos?.token) {
-        throw new Error("El backend no devolvió un token de autenticación.");
-    }
-
     const sesion = {
-        ...datos,
-        expira: Number(datos.expira) || Date.now() + DURACION_SESION_MS,
+        id: respuesta.id,
+        nombre: respuesta.nombre,
+        correo: respuesta.correo,
+        rol: respuesta.rol,
+        token: respuesta.token,
+        expira: respuesta.expira,
     };
 
+    if (!sesion.token) {
+        throw new Error("El servidor no entregó un token de autenticación.");
+    }
+
     localStorage.setItem(CLAVE_SESION, JSON.stringify(sesion));
+
     return sesion;
 }
 
@@ -107,7 +94,7 @@ export function tienePermiso(usuario, rolesPermitidos) {
     return Boolean(usuario) && rolesPermitidos.includes(usuario.rol);
 }
 
-/* ---------- Registro público ---------- */
+/* ---------- Registro público conectado al backend ---------- */
 
 export async function registrarCliente({ nombre, correo, clave }) {
     return solicitarAuth("/auth/registro", {
@@ -120,60 +107,152 @@ export async function registrarCliente({ nombre, correo, clave }) {
     });
 }
 
-/* ---------- Administración de usuarios ---------- */
+/* ---------- CRUD local de usuarios (pendiente de integrar al backend) ---------- */
 
-const ROL_A_API = {
-    [ROLES.ADMIN]: "ADMIN",
-    [ROLES.VENDEDOR]: "VENDEDOR",
-    [ROLES.CLIENTE]: "CLIENTE",
-};
-
-const ROL_DESDE_API = {
-    ADMIN: ROLES.ADMIN,
-    VENDEDOR: ROLES.VENDEDOR,
-    CLIENTE: ROLES.CLIENTE,
-};
+export async function asegurarSemilla() {
+    // Ya no se crean usuarios ficticios para iniciar sesión.
+    // La autenticación y los usuarios reales pertenecen al backend.
+}
 
 export async function listarUsuarios() {
-    const usuarios = await solicitarAdmin("/usuarios");
-
-    return (usuarios || []).map((usuario) => ({
-        ...usuario,
-        rol: ROL_DESDE_API[usuario.rol] || usuario.rol.toLowerCase(),
-    }));
+    await asegurarSemilla();
+    return (leerUsuarios() || []).map(sinClave);
 }
 
 export async function crearUsuario({ nombre, correo, clave, rol }) {
-    return solicitarAdmin("/usuarios", {
-        method: "POST",
-        body: JSON.stringify({
-            nombre: nombre.trim(),
-            correo: correo.trim().toLowerCase(),
-            clave,
-            rol: ROL_A_API[rol] || rol,
-        }),
-    });
+    await asegurarSemilla();
+
+    const usuarios = leerUsuarios() || [];
+    const correoNormalizado = correo.trim().toLowerCase();
+
+    if (!nombre.trim()) {
+        throw new Error("El nombre es obligatorio.");
+    }
+
+    if (!validarCorreo(correoNormalizado)) {
+        throw new Error("Correo no válido.");
+    }
+
+    if (!validarClave(clave)) {
+        throw new Error(
+            "La clave debe tener mínimo 8 caracteres, con letras y números."
+        );
+    }
+
+    if (!Object.values(ROLES).includes(rol)) {
+        throw new Error("Rol no válido.");
+    }
+
+    if (usuarios.some((u) => u.correo === correoNormalizado)) {
+        throw new Error("Ya existe un usuario con ese correo.");
+    }
+
+    const nuevo = {
+        id: Math.max(0, ...usuarios.map((u) => u.id)) + 1,
+        nombre: nombre.trim(),
+        correo: correoNormalizado,
+        rol,
+        activo: true,
+        claveHash: await hashearClave(clave),
+    };
+
+    guardarUsuarios([...usuarios, nuevo]);
+
+    return sinClave(nuevo);
 }
 
-export async function actualizarUsuario(id, { rol }) {
-    return solicitarAdmin(`/usuarios/${id}/rol`, {
-        method: "PATCH",
-        body: JSON.stringify({
-            rol: ROL_A_API[rol] || rol,
-        }),
-    });
+export async function actualizarUsuario(
+    id,
+    { nombre, correo, rol, clave }
+) {
+    const usuarios = leerUsuarios() || [];
+    const actual = usuarios.find((u) => u.id === id);
+
+    if (!actual) {
+        throw new Error("Usuario no encontrado.");
+    }
+
+    const correoNormalizado = correo.trim().toLowerCase();
+
+    if (!nombre.trim()) {
+        throw new Error("El nombre es obligatorio.");
+    }
+
+    if (!validarCorreo(correoNormalizado)) {
+        throw new Error("Correo no válido.");
+    }
+
+    if (
+        usuarios.some(
+            (u) => u.correo === correoNormalizado && u.id !== id
+        )
+    ) {
+        throw new Error("Ya existe un usuario con ese correo.");
+    }
+
+    if (
+        actual.rol === ROLES.ADMIN &&
+        rol !== ROLES.ADMIN &&
+        contarAdminsActivos(usuarios) <= 1
+    ) {
+        throw new Error(
+            "Debe existir al menos un administrador activo."
+        );
+    }
+
+    const actualizado = {
+        ...actual,
+        nombre: nombre.trim(),
+        correo: correoNormalizado,
+        rol,
+    };
+
+    if (clave) {
+        if (!validarClave(clave)) {
+            throw new Error(
+                "La clave debe tener mínimo 8 caracteres, con letras y números."
+            );
+        }
+
+        actualizado.claveHash = await hashearClave(clave);
+    }
+
+    guardarUsuarios(
+        usuarios.map((u) => (u.id === id ? actualizado : u))
+    );
+
+    return sinClave(actualizado);
 }
 
-export async function cambiarEstadoUsuario(id, activo) {
-    return solicitarAdmin(`/usuarios/${id}/estado`, {
-        method: "PATCH",
-        body: JSON.stringify({ activo }),
-    });
+export function cambiarEstadoUsuario(id, activo) {
+    const usuarios = leerUsuarios() || [];
+    const objetivo = usuarios.find((u) => u.id === id);
+
+    if (!objetivo) {
+        throw new Error("Usuario no encontrado.");
+    }
+
+    if (
+        !activo &&
+        objetivo.rol === ROLES.ADMIN &&
+        contarAdminsActivos(usuarios) <= 1
+    ) {
+        throw new Error(
+            "No puedes desactivar al único administrador activo."
+        );
+    }
+
+    guardarUsuarios(
+        usuarios.map((u) =>
+            u.id === id ? { ...u, activo } : u
+        )
+    );
 }
 
-/* AuthContext llama esta función al iniciar; los usuarios ahora están en el backend. */
-export async function asegurarSemilla() {
-    // No se crean usuarios de prueba en el almacenamiento local.
+function contarAdminsActivos(usuarios) {
+    return usuarios.filter(
+        (u) => u.rol === ROLES.ADMIN && u.activo
+    ).length;
 }
 
 export { hashearClave } from "../utils/seguridad";

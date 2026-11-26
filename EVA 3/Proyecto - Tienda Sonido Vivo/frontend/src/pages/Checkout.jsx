@@ -23,7 +23,6 @@ function Checkout({ carrito, onVolver, onConfirmar }) {
 
         try {
             const creado = await crearPedidoApi({
-                usuarioId: usuario?.id ?? null,
                 entrega: datos.get("entrega") ?? "retiro",
                 direccion: datos.get("direccion") ?? "",
                 telefono: datos.get("telefono") ?? "",

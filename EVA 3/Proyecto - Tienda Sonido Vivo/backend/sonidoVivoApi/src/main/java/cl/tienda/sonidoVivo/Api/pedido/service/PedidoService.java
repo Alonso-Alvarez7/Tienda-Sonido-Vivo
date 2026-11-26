@@ -1,3 +1,4 @@
+
 package cl.tienda.sonidoVivo.Api.pedido.service;
 
 import java.util.HashMap;
@@ -28,12 +29,21 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final ProductoRepository productoRepository;
 
-    public PedidoService(PedidoRepository pedidoRepository, ProductoRepository productoRepository) {
+    public PedidoService(
+            PedidoRepository pedidoRepository,
+            ProductoRepository productoRepository) {
         this.pedidoRepository = pedidoRepository;
         this.productoRepository = productoRepository;
     }
 
-    public PedidoResponse crearPedido(PedidoRequest request) {
+    public PedidoResponse crearPedido(PedidoRequest request, Long usuarioId) {
+
+        if (usuarioId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "No se pudo identificar al usuario");
+        }
+
         if (request.tipoEntrega() == TipoEntrega.DESPACHO
                 && (request.direccion() == null || request.direccion().isBlank())) {
             throw new ResponseStatusException(
@@ -41,21 +51,32 @@ public class PedidoService {
                     "La dirección es obligatoria para pedidos con despacho");
         }
 
-        // Agrupar cantidades por código de producto para evitar violar uk_detalle_pedido_producto
         Map<String, Integer> cantidadesPorCodigo = new HashMap<>();
+
         for (ItemPedidoRequest item : request.items()) {
             String codigo = item.codigoProducto().trim();
-            cantidadesPorCodigo.merge(codigo, item.cantidad(), Integer::sum);
+
+            cantidadesPorCodigo.merge(
+                    codigo,
+                    item.cantidad(),
+                    Integer::sum);
         }
 
         Pedido pedido = new Pedido();
-        pedido.setUsuarioId(request.usuarioId() != null ? request.usuarioId() : 0L);
+
+        pedido.setUsuarioId(usuarioId);
         pedido.setTipoEntrega(request.tipoEntrega());
-        pedido.setDireccion(request.tipoEntrega() == TipoEntrega.DESPACHO ? request.direccion().trim() : null);
+
+        pedido.setDireccion(
+                request.tipoEntrega() == TipoEntrega.DESPACHO
+                        ? request.direccion().trim()
+                        : null);
+
         pedido.setTelefonoContacto(request.telefonoContacto().trim());
         pedido.setEstado(EstadoPedido.EN_PREPARACION);
 
         for (Map.Entry<String, Integer> entrada : cantidadesPorCodigo.entrySet()) {
+
             String codigo = entrada.getKey();
             int cantidadSolicitada = entrada.getValue();
 
@@ -73,19 +94,23 @@ public class PedidoService {
             if (producto.getStock() < cantidadSolicitada) {
                 throw new ResponseStatusException(
                         HttpStatus.CONFLICT,
-                        "Stock insuficiente para '" + producto.getNombre() + "'. Disponible: " + producto.getStock());
+                        "Stock insuficiente para '"
+                                + producto.getNombre()
+                                + "'. Disponible: "
+                                + producto.getStock());
             }
 
-            // Descuento de stock (protegido por @Version en Producto)
             producto.setStock(producto.getStock() - cantidadSolicitada);
             productoRepository.save(producto);
 
-            pedido.agregarDetalle(DetallePedido.desde(producto, cantidadSolicitada));
+            pedido.agregarDetalle(
+                    DetallePedido.desde(producto, cantidadSolicitada));
         }
 
-        // Primer save para obtener el ID autogenerado y luego asignar PED-XXXX
         Pedido guardado = pedidoRepository.save(pedido);
+
         guardado.asignarCodigo();
+
         guardado = pedidoRepository.save(guardado);
 
         return convertirAResponse(guardado);
@@ -93,6 +118,7 @@ public class PedidoService {
 
     @Transactional(readOnly = true)
     public List<PedidoResponse> listarTodos(EstadoPedido estado) {
+
         return pedidoRepository.listarTodosConDetalles(estado)
                 .stream()
                 .map(this::convertirAResponse)
@@ -101,30 +127,122 @@ public class PedidoService {
 
     @Transactional(readOnly = true)
     public List<PedidoResponse> listarPorCliente(Long usuarioId) {
+
+        if (usuarioId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "No se pudo identificar al usuario");
+        }
+
         return pedidoRepository.listarPorUsuarioId(usuarioId)
                 .stream()
                 .map(this::convertirAResponse)
                 .toList();
     }
 
-    public PedidoResponse actualizarEstado(Long id, EstadoPedido nuevoEstado) {
+    // Obtener un pedido para vendedor o administrador.
+    @Transactional(readOnly = true)
+    public PedidoResponse obtenerPorId(Long pedidoId) {
+
+        Pedido pedido = pedidoRepository.buscarPorIdConDetalles(pedidoId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se encontró el pedido con ID: " + pedidoId));
+
+        return convertirAResponse(pedido);
+    }
+
+    // Obtener un pedido únicamente si pertenece al cliente autenticado.
+    @Transactional(readOnly = true)
+    public PedidoResponse obtenerPorIdCliente(Long pedidoId, Long usuarioId) {
+
+        if (usuarioId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "No se pudo identificar al usuario");
+        }
+
+        Pedido pedido = pedidoRepository
+                .buscarPorIdYUsuario(pedidoId, usuarioId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No se encontró el pedido solicitado"));
+
+        return convertirAResponse(pedido);
+    }
+
+    public PedidoResponse actualizarEstado(
+            Long id,
+            EstadoPedido nuevoEstado) {
+
+        if (nuevoEstado == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "El nuevo estado es obligatorio");
+        }
+
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "No se encontró el pedido con ID: " + id));
 
+        validarTransicionEstado(pedido, nuevoEstado);
+
         pedido.setEstado(nuevoEstado);
+
         return convertirAResponse(pedidoRepository.save(pedido));
     }
 
+    private void validarTransicionEstado(
+            Pedido pedido,
+            EstadoPedido nuevoEstado) {
+
+        EstadoPedido estadoActual = pedido.getEstado();
+        TipoEntrega tipoEntrega = pedido.getTipoEntrega();
+
+        if (estadoActual == nuevoEstado) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "El pedido ya se encuentra en ese estado");
+        }
+
+        boolean transicionPermitida = switch (estadoActual) {
+
+            case EN_PREPARACION ->
+                    (tipoEntrega == TipoEntrega.DESPACHO
+                            && nuevoEstado == EstadoPedido.DESPACHADO)
+                            ||
+                            (tipoEntrega == TipoEntrega.RETIRO
+                                    && nuevoEstado == EstadoPedido.ENTREGADO);
+
+            case DESPACHADO ->
+                    tipoEntrega == TipoEntrega.DESPACHO
+                            && nuevoEstado == EstadoPedido.ENTREGADO;
+
+            case ENTREGADO -> false;
+        };
+
+        if (!transicionPermitida) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "No se puede cambiar el pedido desde '"
+                            + estadoActual.getEtiqueta()
+                            + "' a '"
+                            + nuevoEstado.getEtiqueta()
+                            + "'");
+        }
+    }
+
     private PedidoResponse convertirAResponse(Pedido pedido) {
-        List<DetallePedidoResponse> items = pedido.getDetalles().stream()
-                .map(d -> new DetallePedidoResponse(
-                        d.getProducto().getCodigo(),
-                        d.getNombreProducto(),
-                        d.getPrecioUnitario(),
-                        d.getCantidad(),
-                        d.getSubtotal()))
+
+        List<DetallePedidoResponse> items = pedido.getDetalles()
+                .stream()
+                .map(detalle -> new DetallePedidoResponse(
+                        detalle.getProducto().getCodigo(),
+                        detalle.getNombreProducto(),
+                        detalle.getPrecioUnitario(),
+                        detalle.getCantidad(),
+                        detalle.getSubtotal()))
                 .toList();
 
         return new PedidoResponse(
@@ -134,7 +252,9 @@ public class PedidoService {
                 pedido.getFecha(),
                 pedido.getEstado().getEtiqueta(),
                 pedido.getTipoEntrega().name().toLowerCase(),
-                pedido.getDireccion() != null ? pedido.getDireccion() : "",
+                pedido.getDireccion() != null
+                        ? pedido.getDireccion()
+                        : "",
                 pedido.getTelefonoContacto(),
                 pedido.getTotal(),
                 items);

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 
@@ -17,12 +18,10 @@ import Vendedor from "./pages/Vendedor.jsx";
 import MisPedidos from "./pages/MisPedidos.jsx";
 import NoAutorizado from "./pages/NoAutorizado.jsx";
 
-
 import { ROLES } from "./auth/auth";
 import Contacto from "./pages/Contacto.jsx";
 import Nosotros from "./pages/Nosotros.jsx";
 import Blog from "./pages/Blog.jsx";
-
 
 function PaginaDetalle({ onAgregar }) {
   const { id } = useParams();
@@ -72,7 +71,9 @@ function PaginaDetalle({ onAgregar }) {
     return (
       <main>
         <h1>Producto no encontrado</h1>
-        <p role="alert">{error || "No se encontró el producto solicitado."}</p>
+        <p role="alert">
+          {error || "No se encontró el producto solicitado."}
+        </p>
         <button onClick={() => navegar("/")}>
           Volver a la tienda
         </button>
@@ -89,12 +90,12 @@ function PaginaDetalle({ onAgregar }) {
   );
 }
 
-
 /**
  * Rutas protegidas por rol:
+ * - /checkout: solo cliente autenticado.
  * - /admin: solo administrador.
  * - /vendedor: vendedor y administrador.
- * - /mis-pedidos: cliente.
+ * - /mis-pedidos: solo cliente.
  */
 function App() {
   const navegar = useNavigate();
@@ -111,7 +112,6 @@ function App() {
   useEffect(() => {
     localStorage.setItem("sonidoVivoCarrito", JSON.stringify(carrito));
   }, [carrito]);
-
 
   function agregarAlCarrito(producto) {
     const productoNormalizado = {
@@ -140,26 +140,25 @@ function App() {
     });
   }
 
-
   function cambiarCantidad(id, nuevaCantidad) {
     setCarrito((carritoActual) =>
       carritoActual.map((item) =>
         item.id === id
           ? { ...item, cantidad: Math.min(nuevaCantidad, item.stock) }
-          : item,
-      ),
+          : item
+      )
     );
   }
 
   function eliminarDelCarrito(id) {
     setCarrito((carritoActual) =>
-      carritoActual.filter((item) => item.id !== id),
+      carritoActual.filter((item) => item.id !== id)
     );
   }
 
   const cantidadEnCarrito = carrito.reduce(
     (total, producto) => total + producto.cantidad,
-    0,
+    0
   );
 
   return (
@@ -170,6 +169,7 @@ function App() {
         <Route path="contacto" element={<Contacto />} />
         <Route path="nosotros" element={<Nosotros />} />
         <Route path="blog" element={<Blog />} />
+
         <Route
           index
           element={
@@ -178,7 +178,11 @@ function App() {
               <Productos
                 onAgregar={agregarAlCarrito}
                 onVerDetalle={(producto) =>
-                  navegar(`/productos/${encodeURIComponent(producto.codigo ?? producto.id)}`)
+                  navegar(
+                    `/productos/${encodeURIComponent(
+                      producto.codigo ?? producto.id
+                    )}`
+                  )
                 }
               />
             </>
@@ -202,14 +206,17 @@ function App() {
           }
         />
 
+        {/* Checkout protegido: solamente clientes autenticados */}
         <Route
           path="checkout"
           element={
-            <Checkout
-              carrito={carrito}
-              onVolver={() => navegar("/carrito")}
-              onConfirmar={() => setCarrito([])}
-            />
+            <RutaProtegida roles={[ROLES.CLIENTE]}>
+              <Checkout
+                carrito={carrito}
+                onVolver={() => navegar("/carrito")}
+                onConfirmar={() => setCarrito([])}
+              />
+            </RutaProtegida>
           }
         />
 
@@ -249,7 +256,9 @@ function App() {
           element={
             <main>
               <h1>Página no encontrada</h1>
-              <button onClick={() => navegar("/")}>Volver a Inicio</button>
+              <button onClick={() => navegar("/")}>
+                Volver a Inicio
+              </button>
             </main>
           }
         />

@@ -1,12 +1,21 @@
+import { obtenerSesion } from "../auth/auth";
+
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
 async function solicitar(endpoint, opciones = {}) {
+    const sesion = obtenerSesion();
+
+    const headers = {
+        "Content-Type": "application/json",
+        ...(sesion?.token
+            ? { Authorization: `Bearer ${sesion.token}` }
+            : {}),
+        ...opciones.headers,
+    };
+
     const respuesta = await fetch(`${API_URL}${endpoint}`, {
-        headers: {
-            "Content-Type": "application/json",
-            ...opciones.headers,
-        },
         ...opciones,
+        headers,
     });
 
     const resultado = await respuesta.json().catch(() => null);
