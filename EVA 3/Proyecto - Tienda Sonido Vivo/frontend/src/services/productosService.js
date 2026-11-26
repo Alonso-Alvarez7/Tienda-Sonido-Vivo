@@ -50,3 +50,10 @@ export async function actualizarProducto(codigo, datos) {
         body: JSON.stringify(datos),
     });
 }
+
+export async function actualizarStockProducto(codigo, stock) {
+    return solicitar(`/productos/${encodeURIComponent(codigo)}/stock`, {
+        method: "PATCH",
+        body: JSON.stringify({ stock }),
+    });
+}
