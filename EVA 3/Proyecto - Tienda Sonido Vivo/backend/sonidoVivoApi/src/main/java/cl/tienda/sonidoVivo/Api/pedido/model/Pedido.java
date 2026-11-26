@@ -40,8 +40,9 @@ public class Pedido {
     private String codigo;
 
     /**
-     * Id del cliente que hizo el pedido. Pasará a @ManyToOne Usuario cuando exista
-     * la entidad de usuarios (T-08).
+     * ID del usuario que realizó la compra (autenticado vía JWT).
+     * Referencia a la tabla {@code usuarios(id)} mediante la restricción {@code fk_pedidos_usuario}.
+     * Se mantiene como identificador escalar para desacoplar el dominio de pedidos del módulo de usuarios.
      */
     @Column(name = "usuario_id", nullable = false)
     private Long usuarioId;
