@@ -1,0 +1,85 @@
+package cl.tienda.sonidoVivo.Api.usuario.security;
+
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import cl.tienda.sonidoVivo.Api.usuario.service.JwtService;
+import cl.tienda.sonidoVivo.Api.usuario.service.UsuarioDetailsService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+@Component
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
+    private final JwtService jwtService;
+    private final UsuarioDetailsService usuarioDetailsService;
+
+    public JwtAuthenticationFilter(
+            JwtService jwtService,
+            UsuarioDetailsService usuarioDetailsService) {
+        this.jwtService = jwtService;
+        this.usuarioDetailsService = usuarioDetailsService;
+    }
+
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
+
+        String encabezado = request.getHeader("Authorization");
+
+        if (encabezado == null || !encabezado.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = encabezado.substring(7);
+
+        if (!jwtService.esValido(token)) {
+            log.warn("JWT inválido para {} {}.", request.getMethod(), request.getRequestURI());
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            log.info("JWT válido, pero el contexto ya tenía una autenticación.");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        log.info("JWT válido para {} {}; cargando usuario y permisos.",
+                request.getMethod(), request.getRequestURI());
+        String correo = jwtService.obtenerCorreo(token);
+        UserDetails usuario = usuarioDetailsService.loadUserByUsername(correo);
+        log.info("Usuario JWT cargado: habilitado={}, permisos={}",
+                usuario.isEnabled(), usuario.getAuthorities());
+
+        UsernamePasswordAuthenticationToken autenticacion =
+                new UsernamePasswordAuthenticationToken(
+                        usuario,
+                        null,
+                        usuario.getAuthorities());
+
+        autenticacion.setDetails(
+                new WebAuthenticationDetailsSource().buildDetails(request));
+
+        SecurityContextHolder.getContext().setAuthentication(autenticacion);
+        log.info("Autenticación JWT establecida en el contexto de seguridad.");
+
+        filterChain.doFilter(request, response);
+    }
+}
