@@ -1,9 +1,11 @@
+
 package cl.tienda.sonidoVivo.Api.pedido.controller;
 
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,6 +68,38 @@ public class PedidoController {
         return ResponseEntity.ok(
                 ApiResponse.exito(
                         pedidoService.listarPorCliente(usuarioId)));
+    }
+
+    // Obtener detalle de un pedido.
+    // CLIENTE: solo puede consultar sus propios pedidos.
+    // VENDEDOR y ADMIN: pueden consultar cualquier pedido.
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<PedidoResponse>> obtenerPedido(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails usuarioAutenticado) {
+
+        if (usuarioAutenticado == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Debes iniciar sesión para consultar el pedido");
+        }
+
+        boolean esCliente = usuarioAutenticado.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(autoridad -> autoridad.equals("ROLE_CLIENTE"));
+
+        PedidoResponse pedido;
+
+        if (esCliente) {
+            Long usuarioId = obtenerUsuarioId(usuarioAutenticado);
+            pedido = pedidoService.obtenerPorIdCliente(id, usuarioId);
+        } else {
+            pedido = pedidoService.obtenerPorId(id);
+        }
+
+        return ResponseEntity.ok(
+                ApiResponse.exito(pedido));
     }
 
     // Listar todos los pedidos para vendedor y administrador.

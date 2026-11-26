@@ -29,159 +29,165 @@ import cl.tienda.sonidoVivo.Api.usuario.security.JwtAuthenticationFilter;
 @Configuration
 public class SecurityConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
+        private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
 
-    @Bean
-    public SecurityFilterChain filterChain(
-            HttpSecurity http,
-            JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+        @Bean
+        public SecurityFilterChain filterChain(
+                        HttpSecurity http,
+                        JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
 
-        http
-                .cors(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
+                http
+                                .cors(Customizer.withDefaults())
+                                .csrf(AbstractHttpConfigurer::disable)
 
-                .sessionManagement(
-                        sesion -> sesion.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .sessionManagement(
+                                                sesion -> sesion.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .exceptionHandling(manejo -> manejo
+                                .exceptionHandling(manejo -> manejo
 
-                        .authenticationEntryPoint((request, response, exception) -> {
-                            Authentication autenticacion = SecurityContextHolder
-                                    .getContext().getAuthentication();
+                                                .authenticationEntryPoint((request, response, exception) -> {
+                                                        Authentication autenticacion = SecurityContextHolder
+                                                                        .getContext().getAuthentication();
 
-                            log.warn(
-                                    "401 en {} {}: excepción={}, autenticación={}",
-                                    request.getMethod(),
-                                    request.getRequestURI(),
-                                    exception.getClass().getSimpleName(),
-                                    autenticacion == null
-                                            ? "ninguna"
-                                            : autenticacion.getName());
+                                                        log.warn(
+                                                                        "401 en {} {}: excepción={}, autenticación={}",
+                                                                        request.getMethod(),
+                                                                        request.getRequestURI(),
+                                                                        exception.getClass().getSimpleName(),
+                                                                        autenticacion == null
+                                                                                        ? "ninguna"
+                                                                                        : autenticacion.getName());
 
-                            response.sendError(HttpStatus.UNAUTHORIZED.value());
-                        })
+                                                        response.sendError(HttpStatus.UNAUTHORIZED.value());
+                                                })
 
-                        .accessDeniedHandler((request, response, exception) -> {
-                            Authentication autenticacion = SecurityContextHolder
-                                    .getContext().getAuthentication();
+                                                .accessDeniedHandler((request, response, exception) -> {
+                                                        Authentication autenticacion = SecurityContextHolder
+                                                                        .getContext().getAuthentication();
 
-                            log.warn(
-                                    "403 en {} {}: usuario={}, permisos={}",
-                                    request.getMethod(),
-                                    request.getRequestURI(),
-                                    autenticacion == null
-                                            ? "ninguno"
-                                            : autenticacion.getName(),
-                                    autenticacion == null
-                                            ? List.of()
-                                            : autenticacion.getAuthorities());
+                                                        log.warn(
+                                                                        "403 en {} {}: usuario={}, permisos={}",
+                                                                        request.getMethod(),
+                                                                        request.getRequestURI(),
+                                                                        autenticacion == null
+                                                                                        ? "ninguno"
+                                                                                        : autenticacion.getName(),
+                                                                        autenticacion == null
+                                                                                        ? List.of()
+                                                                                        : autenticacion.getAuthorities());
 
-                            response.setStatus(HttpStatus.FORBIDDEN.value());
-                        }))
+                                                        response.setStatus(HttpStatus.FORBIDDEN.value());
+                                                }))
 
-                .authorizeHttpRequests(rutas -> rutas
+                                .authorizeHttpRequests(rutas -> rutas
 
-                        // Rutas públicas de autenticación y documentación.
-                        .requestMatchers(
-                                "/api/auth/registro",
-                                "/api/auth/login",
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html")
-                        .permitAll()
+                                                // Rutas públicas de autenticación y documentación.
+                                                .requestMatchers(
+                                                                "/api/auth/registro",
+                                                                "/api/auth/login",
+                                                                "/v3/api-docs/**",
+                                                                "/swagger-ui/**",
+                                                                "/swagger-ui.html")
+                                                .permitAll()
 
-                        // Catálogo público.
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/productos/**",
-                                "/api/categorias/**")
-                        .permitAll()
+                                                // Catálogo público.
+                                                .requestMatchers(
+                                                                HttpMethod.GET,
+                                                                "/api/productos/**",
+                                                                "/api/categorias/**")
+                                                .permitAll()
 
-                        // Administración de productos.
-                        .requestMatchers("/api/productos/**")
-                        .hasRole("ADMIN")
+                                                // Administración de productos.
+                                                .requestMatchers("/api/productos/**")
+                                                .hasRole("ADMIN")
 
-                        // Crear pedidos: solamente clientes.
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/pedidos")
-                        .hasRole("CLIENTE")
+                                                // Crear pedidos: solamente clientes.
+                                                .requestMatchers(
+                                                                HttpMethod.POST,
+                                                                "/api/pedidos")
+                                                .hasRole("CLIENTE")
 
-                        // Historial propio: solamente clientes.
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/pedidos/mis-pedidos")
-                        .hasRole("CLIENTE")
+                                                // Historial propio: solamente clientes.
+                                                .requestMatchers(
+                                                                HttpMethod.GET,
+                                                                "/api/pedidos/mis-pedidos")
+                                                .hasRole("CLIENTE")
 
-                        // Listado general: vendedor o administrador.
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/pedidos")
-                        .hasAnyRole("ADMIN", "VENDEDOR")
+                                                // Detalle de un pedido: cliente propietario, vendedor o administrador.
+                                                .requestMatchers(
+                                                                HttpMethod.GET,
+                                                                "/api/pedidos/*")
+                                                .hasAnyRole("CLIENTE", "VENDEDOR", "ADMIN")
 
-                        // Cambio de estado: vendedor o administrador.
-                        .requestMatchers(
-                                HttpMethod.PATCH,
-                                "/api/pedidos/*/estado")
-                        .hasAnyRole("ADMIN", "VENDEDOR")
+                                                // Listado general: vendedor o administrador.
+                                                .requestMatchers(
+                                                                HttpMethod.GET,
+                                                                "/api/pedidos")
+                                                .hasAnyRole("ADMIN", "VENDEDOR")
 
-                        // Administración de usuarios.
-                        .requestMatchers("/api/usuarios/**")
-                        .hasRole("ADMIN")
+                                                // Cambio de estado: vendedor o administrador.
+                                                .requestMatchers(
+                                                                HttpMethod.PATCH,
+                                                                "/api/pedidos/*/estado")
+                                                .hasAnyRole("ADMIN", "VENDEDOR")
 
-                        // Cualquier otra ruta protegida.
-                        .anyRequest()
-                        .authenticated())
+                                                // Administración de usuarios.
+                                                .requestMatchers("/api/usuarios/**")
+                                                .hasRole("ADMIN")
 
-                .addFilterBefore(
-                        jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+                                                // Cualquier otra ruta protegida.
+                                                .anyRequest()
+                                                .authenticated())
 
-        return http.build();
-    }
+                                .addFilterBefore(
+                                                jwtAuthenticationFilter,
+                                                UsernamePasswordAuthenticationFilter.class);
 
-    @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration configuracion) throws Exception {
+                return http.build();
+        }
 
-        return configuracion.getAuthenticationManager();
-    }
+        @Bean
+        public AuthenticationManager authenticationManager(
+                        AuthenticationConfiguration configuracion) throws Exception {
 
-    @Bean
-    public FilterRegistrationBean<JwtAuthenticationFilter> jwtAuthenticationFilterRegistration(
-            JwtAuthenticationFilter jwtAuthenticationFilter) {
+                return configuracion.getAuthenticationManager();
+        }
 
-        FilterRegistrationBean<JwtAuthenticationFilter> registration = new FilterRegistrationBean<>(
-                jwtAuthenticationFilter);
+        @Bean
+        public FilterRegistrationBean<JwtAuthenticationFilter> jwtAuthenticationFilterRegistration(
+                        JwtAuthenticationFilter jwtAuthenticationFilter) {
 
-        registration.setEnabled(false);
+                FilterRegistrationBean<JwtAuthenticationFilter> registration = new FilterRegistrationBean<>(
+                                jwtAuthenticationFilter);
 
-        return registration;
-    }
+                registration.setEnabled(false);
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+                return registration;
+        }
 
-        CorsConfiguration config = new CorsConfiguration();
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
 
-        config.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "http://127.0.0.1:5173"));
+                CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedMethods(List.of(
-                "GET",
-                "POST",
-                "PUT",
-                "PATCH",
-                "DELETE",
-                "OPTIONS"));
+                config.setAllowedOrigins(List.of(
+                                "http://localhost:5173",
+                                "http://127.0.0.1:5173"));
 
-        config.setAllowedHeaders(List.of("*"));
+                config.setAllowedMethods(List.of(
+                                "GET",
+                                "POST",
+                                "PUT",
+                                "PATCH",
+                                "DELETE",
+                                "OPTIONS"));
 
-        UrlBasedCorsConfigurationSource fuente = new UrlBasedCorsConfigurationSource();
+                config.setAllowedHeaders(List.of("*"));
 
-        fuente.registerCorsConfiguration("/api/**", config);
+                UrlBasedCorsConfigurationSource fuente = new UrlBasedCorsConfigurationSource();
 
-        return fuente;
-    }
+                fuente.registerCorsConfiguration("/api/**", config);
+
+                return fuente;
+        }
 }
