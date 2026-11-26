@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -61,12 +62,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        log.info("JWT válido para {} {}; cargando usuario y permisos.",
-                request.getMethod(), request.getRequestURI());
         String correo = jwtService.obtenerCorreo(token);
-        UserDetails usuario = usuarioDetailsService.loadUserByUsername(correo);
-        log.info("Usuario JWT cargado: habilitado={}, permisos={}",
-                usuario.isEnabled(), usuario.getAuthorities());
+
+        UserDetails usuario;
+        try {
+            usuario = usuarioDetailsService.loadUserByUsername(correo);
+        } catch (UsernameNotFoundException e) {
+            log.warn("JWT de un usuario que ya no existe para {} {}.",
+                    request.getMethod(), request.getRequestURI());
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // Un usuario desactivado no puede seguir usando un token emitido antes.
+        if (!usuario.isEnabled()) {
+            log.warn("JWT de usuario desactivado para {} {}.",
+                    request.getMethod(), request.getRequestURI());
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        log.info("JWT válido para {} {}; usuario cargado con permisos={}",
+                request.getMethod(), request.getRequestURI(), usuario.getAuthorities());
 
         UsernamePasswordAuthenticationToken autenticacion =
                 new UsernamePasswordAuthenticationToken(
@@ -78,7 +95,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(autenticacion);
-        log.info("Autenticación JWT establecida en el contexto de seguridad.");
 
         filterChain.doFilter(request, response);
     }
