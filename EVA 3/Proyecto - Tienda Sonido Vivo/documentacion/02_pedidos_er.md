@@ -1,34 +1,48 @@
-# Diagrama ER - Pedidos (T-04)
+# Diagrama ER - Pedidos, usuarios y roles
 
 ```mermaid
 erDiagram
+    ROLES ||--o{ USUARIOS : asigna
     USUARIOS ||--o{ PEDIDOS : realiza
     PEDIDOS ||--|{ DETALLE_PEDIDOS : contiene
-    PRODUCTOS ||--o{ DETALLE_PEDIDOS : "se vende en"
+    PRODUCTOS ||--o{ DETALLE_PEDIDOS : participa
+
+    ROLES {
+        bigint id PK
+        varchar nombre UK
+    }
 
     USUARIOS {
-        bigint id PK "T-08 (Benjamín), pendiente"
+        bigint id PK
+        varchar nombre_completo
+        varchar correo UK
+        varchar password_hash
+        boolean activo
+        bigint rol_id FK
     }
+
     PEDIDOS {
         bigint id PK
         varchar codigo UK
-        bigint usuario_id FK "FK pendiente hasta T-08"
+        bigint usuario_id FK
         datetime fecha
-        enum estado "EN_PREPARACION, DESPACHADO, ENTREGADO"
-        enum tipo_entrega "RETIRO, DESPACHO"
-        varchar direccion "obligatoria si DESPACHO"
+        enum estado
+        enum tipo_entrega
+        varchar direccion
         varchar telefono_contacto
-        int total "CLP, calculado en el servidor"
+        int total
     }
+
     DETALLE_PEDIDOS {
         bigint id PK
         bigint pedido_id FK
         bigint producto_id FK
-        varchar nombre_producto "copia histórica"
-        int precio_unitario "copia histórica"
+        varchar nombre_producto
+        int precio_unitario
         int cantidad
         int subtotal
     }
+
     PRODUCTOS {
         bigint id PK
         varchar codigo UK
@@ -36,3 +50,7 @@ erDiagram
         int stock
     }
 ```
+
+`03_usuarios.sql` crea las tablas `roles` y `usuarios`, e incorpora la clave foránea entre `pedidos.usuario_id` y `usuarios.id`.
+
+**Pendiente de coordinación:** la clave foránea mantiene la relación en la base de datos, pero la API de pedidos debe comprobar que el usuario autenticado solo consulte sus propios pedidos.
