@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PatchMapping;
 
+import cl.tienda.sonidoVivo.Api.producto.dto.ActualizarStockRequest;
 import cl.tienda.sonidoVivo.Api.common.ApiResponse;
 import cl.tienda.sonidoVivo.Api.producto.dto.ProductoRequest;
 import cl.tienda.sonidoVivo.Api.producto.dto.ProductoResponse;
@@ -94,5 +95,18 @@ public class ProductoController {
 
         return ResponseEntity.ok(
                 ApiResponse.exito(null, "Producto activado correctamente"));
+    }
+
+    // Agrega este endpoint dentro de la clase ProductoController:
+    // Actualizar solo el stock de un producto (VENDEDOR y ADMIN)
+    @PatchMapping("/{codigo}/stock")
+    public ResponseEntity<ApiResponse<ProductoResponse>> actualizarStock(
+            @PathVariable String codigo,
+            @Valid @RequestBody ActualizarStockRequest request) {
+
+        return ResponseEntity.ok(
+                ApiResponse.exito(
+                        productoService.actualizarStock(codigo, request.stock()),
+                        "Stock actualizado correctamente"));
     }
 }

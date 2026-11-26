@@ -100,4 +100,16 @@ class ProductoServiceTests {
         assertTrue(
                 productoService.obtenerProducto("TT006").activo());
     }
+
+    @Test
+    void actualizaStockYRechazaStockNegativo() {
+        productoService.crearProducto(request("TT007", "Bajo Stock Test", "Ibanez"));
+
+        ProductoResponse actualizado = productoService.actualizarStock("TT007", 12);
+        assertEquals(12, actualizado.stock());
+
+        ResponseStatusException error = assertThrows(ResponseStatusException.class,
+                () -> productoService.actualizarStock("TT007", -1));
+        assertEquals(400, error.getStatusCode().value());
+    }
 }
