@@ -8,7 +8,13 @@ import {
     cambiarEstadoUsuario,
 } from "../auth/auth";
 
-const FORMULARIO_VACIO = { id: null, nombre: "", correo: "", rol: ROLES.CLIENTE, clave: "" };
+const FORMULARIO_VACIO = {
+    id: null,
+    nombre: "",
+    correo: "",
+    rol: ROLES.CLIENTE,
+    clave: "",
+};
 
 function Admin() {
     const { usuario: sesion } = useAuth();
@@ -16,11 +22,22 @@ function Admin() {
     const [formulario, setFormulario] = useState(FORMULARIO_VACIO);
     const [error, setError] = useState("");
     const [mensaje, setMensaje] = useState("");
+    const [cargando, setCargando] = useState(false);
 
     const editando = formulario.id !== null;
 
     async function cargar() {
-        setUsuarios(await listarUsuarios());
+        setCargando(true);
+        setError("");
+
+        try {
+            const lista = await listarUsuarios();
+            setUsuarios(lista);
+        } catch (e) {
+            setError(e.message);
+        } finally {
+            setCargando(false);
+        }
     }
 
     useEffect(() => {
@@ -28,12 +45,16 @@ function Admin() {
     }, []);
 
     function cambiar(evento) {
-        setFormulario({ ...formulario, [evento.target.name]: evento.target.value });
+        setFormulario({
+            ...formulario,
+            [evento.target.name]: evento.target.value,
+        });
     }
 
     function limpiar() {
         setFormulario(FORMULARIO_VACIO);
         setError("");
+        setMensaje("");
     }
 
     async function guardar(evento) {
@@ -44,29 +65,43 @@ function Admin() {
         try {
             if (editando) {
                 await actualizarUsuario(formulario.id, formulario);
-                setMensaje("Usuario actualizado.");
+                setMensaje("Rol actualizado correctamente.");
             } else {
                 await crearUsuario(formulario);
-                setMensaje("Usuario creado.");
+                setMensaje("Usuario creado correctamente.");
             }
-            limpiar();
-            cargar();
+
+            setFormulario(FORMULARIO_VACIO);
+            await cargar();
         } catch (e) {
             setError(e.message);
         }
     }
 
     function editar(u) {
-        setMensaje("");
-        setFormulario({ id: u.id, nombre: u.nombre, correo: u.correo, rol: u.rol, clave: "" });
-    }
-
-    function alternarEstado(u) {
         setError("");
         setMensaje("");
+        setFormulario({
+            id: u.id,
+            nombre: u.nombre,
+            correo: u.correo,
+            rol: u.rol,
+            clave: "",
+        });
+    }
+
+    async function alternarEstado(u) {
+        setError("");
+        setMensaje("");
+
         try {
-            cambiarEstadoUsuario(u.id, !u.activo);
-            cargar();
+            await cambiarEstadoUsuario(u.id, !u.activo);
+            setMensaje(
+                u.activo
+                    ? "Usuario desactivado correctamente."
+                    : "Usuario activado correctamente."
+            );
+            await cargar();
         } catch (e) {
             setError(e.message);
         }
@@ -81,33 +116,69 @@ function Admin() {
             {mensaje && <p className="admin-ok" role="status">{mensaje}</p>}
 
             <form className="admin-formulario" onSubmit={guardar} noValidate>
-                <h2>{editando ? "Editar usuario" : "Nuevo usuario"}</h2>
+                <h2>{editando ? "Cambiar rol de usuario" : "Nuevo usuario"}</h2>
 
                 <label>
                     Nombre
-                    <input name="nombre" value={formulario.nombre} onChange={cambiar} />
+                    <input
+                        name="nombre"
+                        value={formulario.nombre}
+                        onChange={cambiar}
+                        disabled={editando}
+                        required
+                    />
                 </label>
+
                 <label>
                     Correo
-                    <input name="correo" type="email" value={formulario.correo} onChange={cambiar} />
+                    <input
+                        name="correo"
+                        type="email"
+                        value={formulario.correo}
+                        onChange={cambiar}
+                        disabled={editando}
+                        required
+                    />
                 </label>
+
                 <label>
                     Rol
-                    <select name="rol" value={formulario.rol} onChange={cambiar}>
+                    <select
+                        name="rol"
+                        value={formulario.rol}
+                        onChange={cambiar}
+                    >
                         {Object.values(ROLES).map((rol) => (
                             <option key={rol} value={rol}>{rol}</option>
                         ))}
                     </select>
                 </label>
-                <label>
-                    {editando ? "Nueva contraseña (opcional)" : "Contraseña"}
-                    <input name="clave" type="password" value={formulario.clave} onChange={cambiar} />
-                </label>
+
+                {!editando && (
+                    <label>
+                        Contraseña
+                        <input
+                            name="clave"
+                            type="password"
+                            value={formulario.clave}
+                            onChange={cambiar}
+                            minLength={8}
+                            required
+                        />
+                    </label>
+                )}
 
                 <div className="admin-botones">
-                    <button type="submit">{editando ? "Guardar cambios" : "Crear usuario"}</button>
+                    <button type="submit" disabled={cargando}>
+                        {editando ? "Guardar rol" : "Crear usuario"}
+                    </button>
+
                     {editando && (
-                        <button type="button" className="boton-secundario" onClick={limpiar}>
+                        <button
+                            type="button"
+                            className="boton-secundario"
+                            onClick={limpiar}
+                        >
                             Cancelar
                         </button>
                     )}
@@ -115,6 +186,8 @@ function Admin() {
             </form>
 
             <div className="tabla-contenedor">
+                {cargando && <p>Cargando usuarios…</p>}
+
                 <table className="tabla-admin">
                     <thead>
                         <tr>
@@ -125,6 +198,7 @@ function Admin() {
                             <th>Acciones</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         {usuarios.map((u) => (
                             <tr key={u.id}>
@@ -134,11 +208,20 @@ function Admin() {
                                 <td>{u.activo ? "Activo" : "Desactivado"}</td>
                                 <td>
                                     <div className="admin-botones">
-                                        <button onClick={() => editar(u)}>Editar</button>
                                         <button
+                                            type="button"
+                                            onClick={() => editar(u)}
+                                        >
+                                            Cambiar rol
+                                        </button>
+
+                                        <button
+                                            type="button"
                                             className="boton-secundario"
                                             onClick={() => alternarEstado(u)}
-                                            disabled={u.id === sesion.id}
+                                            disabled={
+                                                cargando || u.id === sesion?.id
+                                            }
                                         >
                                             {u.activo ? "Desactivar" : "Activar"}
                                         </button>
@@ -146,6 +229,12 @@ function Admin() {
                                 </td>
                             </tr>
                         ))}
+
+                        {!cargando && usuarios.length === 0 && !error && (
+                            <tr>
+                                <td colSpan="5">No hay usuarios para mostrar.</td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
