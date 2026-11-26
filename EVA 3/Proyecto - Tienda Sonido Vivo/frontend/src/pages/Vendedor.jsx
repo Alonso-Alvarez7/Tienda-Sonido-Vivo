@@ -23,6 +23,18 @@ function formatoFecha(iso) {
     });
 }
 
+function estadosPermitidos(pedido) {
+    if (pedido.estado === "En preparación") {
+        return pedido.entrega === "despacho"
+            ? ["En preparación", "Despachado"]
+            : ["En preparación", "Entregado"];
+    }
+    if (pedido.estado === "Despachado") {
+        return ["Despachado", "Entregado"];
+    }
+    return ["Entregado"];
+}
+
 function Vendedor() {
     const { usuario } = useAuth();
     const [pestana, setPestana] = useState("pedidos");
@@ -274,10 +286,13 @@ function Vendedor() {
                                         Cambiar estado
                                         <select
                                             value={pedido.estado}
-                                            disabled={actualizandoPedido === pedido.id}
+                                            disabled={
+                                                actualizandoPedido === pedido.id ||
+                                                pedido.estado === "Entregado"
+                                            }
                                             onChange={(e) => cambiarEstado(pedido.id, e.target.value)}
                                         >
-                                            {ESTADOS_PEDIDO.map((estado) => (
+                                            {estadosPermitidos(pedido).map((estado) => (
                                                 <option key={estado} value={estado}>{estado}</option>
                                             ))}
                                         </select>

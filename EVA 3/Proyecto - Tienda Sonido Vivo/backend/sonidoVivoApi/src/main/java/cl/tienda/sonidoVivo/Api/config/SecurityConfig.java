@@ -97,6 +97,9 @@ public class SecurityConfig {
                                                                 "/api/categorias/**")
                                                 .permitAll()
 
+                                                .requestMatchers(HttpMethod.PUT, "/api/productos/*")
+                                                .hasAnyRole("ADMIN", "VENDEDOR")
+                                                
                                                 // Administración de productos.
                                                 .requestMatchers("/api/productos/**")
                                                 .hasRole("ADMIN")
