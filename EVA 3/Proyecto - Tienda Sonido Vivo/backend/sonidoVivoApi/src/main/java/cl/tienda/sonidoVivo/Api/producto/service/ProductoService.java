@@ -131,6 +131,30 @@ public class ProductoService {
 
         productoRepository.save(producto);
     }
+
+    // ==========================================
+    // ACTUALIZAR SOLO STOCK (VENDEDOR / ADMIN)
+    // ==========================================
+
+    public ProductoResponse actualizarStock(String codigo, Integer nuevoStock) {
+        if (nuevoStock == null || nuevoStock < 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "El stock no puede ser negativo");
+        }
+
+        Producto producto = buscarPorCodigo(codigo);
+
+        if (!producto.isActivo()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "No se puede modificar el stock de un producto desactivado");
+        }
+
+        producto.setStock(nuevoStock);
+
+        return convertirAResponse(productoRepository.save(producto));
+    }
     
     // ==========================================
     // MÉTODOS AUXILIARES

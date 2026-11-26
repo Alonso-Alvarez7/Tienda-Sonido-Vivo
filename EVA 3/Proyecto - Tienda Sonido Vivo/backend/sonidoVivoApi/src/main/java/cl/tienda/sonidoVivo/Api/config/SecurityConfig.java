@@ -1,4 +1,3 @@
-
 package cl.tienda.sonidoVivo.Api.config;
 
 import java.util.List;
@@ -97,10 +96,14 @@ public class SecurityConfig {
                                                                 "/api/categorias/**")
                                                 .permitAll()
 
-                                                .requestMatchers(HttpMethod.PUT, "/api/productos/*")
+                                                // Ajuste rápido de stock: vendedor o administrador.
+                                                .requestMatchers(
+                                                                HttpMethod.PATCH,
+                                                                "/api/productos/*/stock")
                                                 .hasAnyRole("ADMIN", "VENDEDOR")
-                                                
-                                                // Administración de productos.
+
+                                                // Administración completa de productos (POST, PUT, DELETE, PATCH
+                                                // activar).
                                                 .requestMatchers("/api/productos/**")
                                                 .hasRole("ADMIN")
 

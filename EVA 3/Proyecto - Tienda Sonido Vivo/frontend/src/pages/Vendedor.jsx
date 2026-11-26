@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext.js";
 import {
     obtenerProductos,
-    actualizarProducto,
+    actualizarStockProducto,
 } from "../services/productosService.js";
 import {
     obtenerPedidos,
@@ -161,18 +161,10 @@ function Vendedor() {
         setErrorStock("");
 
         try {
-            // El PUT del backend exige el producto completo (ProductoRequest).
-            const actualizado = await actualizarProducto(producto.codigo, {
-                codigo: producto.codigo,
-                nombre: producto.nombre,
-                marca: producto.marca,
-                modelo: producto.modelo,
-                descripcion: producto.descripcion,
-                precio: producto.precio,
-                stock: nuevoStock,
-                imagen: producto.imagen,
-                categoriaId: producto.categoriaId,
-            });
+            const actualizado = await actualizarStockProducto(
+                producto.codigo,
+                nuevoStock
+            );
 
             setProductos((lista) =>
                 lista.map((item) =>
