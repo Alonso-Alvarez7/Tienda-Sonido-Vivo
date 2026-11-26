@@ -1,3 +1,4 @@
+
 package cl.tienda.sonidoVivo.Api.config;
 
 import java.util.List;
@@ -28,8 +29,7 @@ import cl.tienda.sonidoVivo.Api.usuario.security.JwtAuthenticationFilter;
 @Configuration
 public class SecurityConfig {
 
-    private static final Logger log =
-            LoggerFactory.getLogger(SecurityConfig.class);
+    private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Bean
     public SecurityFilterChain filterChain(
@@ -40,14 +40,14 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
 
-                .sessionManagement(sesion ->
-                        sesion.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(
+                        sesion -> sesion.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .exceptionHandling(manejo -> manejo
 
                         .authenticationEntryPoint((request, response, exception) -> {
-                            Authentication autenticacion =
-                                    SecurityContextHolder.getContext().getAuthentication();
+                            Authentication autenticacion = SecurityContextHolder
+                                    .getContext().getAuthentication();
 
                             log.warn(
                                     "401 en {} {}: excepción={}, autenticación={}",
@@ -62,8 +62,8 @@ public class SecurityConfig {
                         })
 
                         .accessDeniedHandler((request, response, exception) -> {
-                            Authentication autenticacion =
-                                    SecurityContextHolder.getContext().getAuthentication();
+                            Authentication autenticacion = SecurityContextHolder
+                                    .getContext().getAuthentication();
 
                             log.warn(
                                     "403 en {} {}: usuario={}, permisos={}",
@@ -101,11 +101,17 @@ public class SecurityConfig {
                         .requestMatchers("/api/productos/**")
                         .hasRole("ADMIN")
 
-                        // Historial propio: cualquier usuario autenticado.
+                        // Crear pedidos: solamente clientes.
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/pedidos")
+                        .hasRole("CLIENTE")
+
+                        // Historial propio: solamente clientes.
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/pedidos/mis-pedidos")
-                        .authenticated()
+                        .hasRole("CLIENTE")
 
                         // Listado general: vendedor o administrador.
                         .requestMatchers(
@@ -123,7 +129,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/usuarios/**")
                         .hasRole("ADMIN")
 
-                        // Crear pedidos y cualquier otra ruta protegida.
+                        // Cualquier otra ruta protegida.
                         .anyRequest()
                         .authenticated())
 
@@ -145,8 +151,8 @@ public class SecurityConfig {
     public FilterRegistrationBean<JwtAuthenticationFilter> jwtAuthenticationFilterRegistration(
             JwtAuthenticationFilter jwtAuthenticationFilter) {
 
-        FilterRegistrationBean<JwtAuthenticationFilter> registration =
-                new FilterRegistrationBean<>(jwtAuthenticationFilter);
+        FilterRegistrationBean<JwtAuthenticationFilter> registration = new FilterRegistrationBean<>(
+                jwtAuthenticationFilter);
 
         registration.setEnabled(false);
 
@@ -172,8 +178,7 @@ public class SecurityConfig {
 
         config.setAllowedHeaders(List.of("*"));
 
-        UrlBasedCorsConfigurationSource fuente =
-                new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource fuente = new UrlBasedCorsConfigurationSource();
 
         fuente.registerCorsConfiguration("/api/**", config);
 
